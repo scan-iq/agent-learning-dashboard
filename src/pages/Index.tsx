@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MetricCard } from '@/components/dashboard/MetricCard';
@@ -15,12 +15,14 @@ import { LiveMonitoringDialog } from '@/components/dashboard/LiveMonitoringDialo
 import { ExecutionHistoryDialog } from '@/components/dashboard/ExecutionHistoryDialog';
 import { AlertManagementDialog } from '@/components/dashboard/AlertManagementDialog';
 import { AlertNotificationsPanel } from '@/components/dashboard/AlertNotificationsPanel';
+import { AlertAnalyticsDashboard } from '@/components/dashboard/AlertAnalyticsDashboard';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
 import { AlertRule, NotificationChannel, AlertNotification, AlertChannel } from '@/types/alerts';
-import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell } from 'lucide-react';
+import { AlertAnalytics } from '@/types/alert-analytics';
+import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
@@ -53,6 +55,7 @@ const Index = () => {
   ]);
   const [alertNotifications, setAlertNotifications] = useState<AlertNotification[]>([]);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+  const [alertAnalyticsOpen, setAlertAnalyticsOpen] = useState(false);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -336,6 +339,104 @@ const Index = () => {
     setAlertNotifications(alertNotifications.filter(n => n.id !== id));
   };
 
+  // Calculate alert analytics
+  const alertAnalytics: AlertAnalytics = useMemo(() => {
+    const totalAlerts = alertNotifications.length;
+    const acknowledgedAlerts = alertNotifications.filter(n => n.acknowledged).length;
+    const dismissedAlerts = 0; // Track separately if needed
+    const activeAlerts = alertNotifications.filter(n => !n.acknowledged).length;
+
+    // Calculate MTTR
+    const acknowledgedWithTime = alertNotifications.filter(
+      n => n.acknowledged && n.acknowledgedAt
+    );
+    const avgResolutionTime = acknowledgedWithTime.length > 0
+      ? acknowledgedWithTime.reduce((acc, n) => {
+          const resolution = (new Date(n.acknowledgedAt!).getTime() - new Date(n.timestamp).getTime()) / 60000;
+          return acc + resolution;
+        }, 0) / acknowledgedWithTime.length
+      : 0;
+
+    // False positive rate (simulated - would need user feedback in real system)
+    const falsePositiveRate = Math.random() * 15; // 0-15%
+
+    // Group by rule
+    const alertsByRule = alertRules.map(rule => ({
+      ruleId: rule.id,
+      ruleName: rule.name,
+      count: alertNotifications.filter(n => n.ruleName === rule.name).length,
+      severity: rule.severity,
+    })).filter(r => r.count > 0);
+
+    // Group by severity
+    const alertsBySeverity = [
+      { severity: 'info' as const, count: alertNotifications.filter(n => n.severity === 'info').length },
+      { severity: 'warning' as const, count: alertNotifications.filter(n => n.severity === 'warning').length },
+      { severity: 'critical' as const, count: alertNotifications.filter(n => n.severity === 'critical').length },
+    ].filter(s => s.count > 0);
+
+    // Channel performance
+    const channelPerformance = (['in_app', 'email', 'slack', 'webhook'] as AlertChannel[]).map(channel => {
+      const channelAlerts = alertNotifications.filter(n => n.channels.includes(channel));
+      const totalSent = channelAlerts.length;
+      const successful = channelAlerts.filter(
+        n => n.deliveryStatus[channel] === 'sent'
+      ).length;
+      const failed = channelAlerts.filter(
+        n => n.deliveryStatus[channel] === 'failed'
+      ).length;
+
+      return {
+        channel,
+        totalSent,
+        successful,
+        failed,
+        avgDeliveryTime: 50 + Math.random() * 150, // Simulated
+      };
+    }).filter(c => c.totalSent > 0);
+
+    // Resolution times by rule
+    const resolutionTimes = alertsByRule.map(rule => {
+      const ruleAlerts = alertNotifications.filter(
+        n => n.ruleName === rule.ruleName && n.acknowledged && n.acknowledgedAt
+      );
+      const times = ruleAlerts.map(
+        n => (new Date(n.acknowledgedAt!).getTime() - new Date(n.timestamp).getTime()) / 60000
+      );
+
+      return {
+        ruleId: rule.ruleId,
+        ruleName: rule.ruleName,
+        avgResolutionTime: times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : 0,
+        minTime: times.length > 0 ? Math.min(...times) : 0,
+        maxTime: times.length > 0 ? Math.max(...times) : 0,
+      };
+    });
+
+    return {
+      totalAlerts,
+      acknowledgedAlerts,
+      dismissedAlerts,
+      activeAlerts,
+      mttr: avgResolutionTime,
+      falsePositiveRate,
+      alertsByRule,
+      alertsBySeverity,
+      alertsByChannel: channelPerformance.map(c => ({
+        channel: c.channel,
+        count: c.totalSent,
+        successRate: c.totalSent > 0 ? (c.successful / c.totalSent) * 100 : 0,
+      })),
+      alertsOverTime: alertNotifications.map(n => ({
+        timestamp: n.timestamp,
+        count: 1,
+        severity: n.severity,
+      })),
+      resolutionTimes,
+      channelPerformance,
+    };
+  }, [alertNotifications, alertRules]);
+
   const handleScheduleAction = (actionId: string) => {
     const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
     const action = diagnosticData?.remediation_actions.find(a => a.id === actionId);
@@ -466,6 +567,15 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => setAlertAnalyticsOpen(true)}
+              >
+                <BarChart3 className="w-4 h-4" />
+                Analytics
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -682,6 +792,14 @@ const Index = () => {
         onUpdateRule={handleUpdateAlertRule}
         onDeleteRule={handleDeleteAlertRule}
         onUpdateChannel={handleUpdateNotificationChannel}
+      />
+
+      {/* Alert Analytics Dashboard */}
+      <AlertAnalyticsDashboard
+        analytics={alertAnalytics}
+        notifications={alertNotifications}
+        open={alertAnalyticsOpen}
+        onClose={() => setAlertAnalyticsOpen(false)}
       />
     </div>
   );
