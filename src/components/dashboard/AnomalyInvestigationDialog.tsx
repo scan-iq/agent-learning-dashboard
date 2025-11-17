@@ -19,13 +19,14 @@ import {
   Wrench,
   Play,
   CheckCircle2,
-  Clock,
+  Clock as ClockIcon,
   XCircle,
   TrendingUp,
   Cpu,
   HardDrive,
   Network,
   Database,
+  CalendarClock,
 } from 'lucide-react';
 
 interface AnomalyInvestigationDialogProps {
@@ -34,6 +35,7 @@ interface AnomalyInvestigationDialogProps {
   open: boolean;
   onClose: () => void;
   onExecuteAction: (actionId: string) => void;
+  onScheduleAction: (actionId: string) => void;
 }
 
 export function AnomalyInvestigationDialog({
@@ -42,6 +44,7 @@ export function AnomalyInvestigationDialog({
   open,
   onClose,
   onExecuteAction,
+  onScheduleAction,
 }: AnomalyInvestigationDialogProps) {
   if (!anomaly || !diagnosticData) return null;
 
@@ -229,7 +232,7 @@ export function AnomalyInvestigationDialog({
                         </div>
                         <div className="text-right">
                           <div className="flex items-center gap-2 mb-1">
-                            <Clock className="w-3 h-3 text-muted-foreground" />
+                            <ClockIcon className="w-3 h-3 text-muted-foreground" />
                             <span className="text-xs font-mono text-foreground">{trace.latency}ms</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -281,7 +284,7 @@ export function AnomalyInvestigationDialog({
                         <p className="text-sm text-muted-foreground mb-3">{action.description}</p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                            <ClockIcon className="w-3 h-3" />
                             <span>Est. {action.estimated_time}</span>
                           </div>
                         </div>
@@ -299,14 +302,23 @@ export function AnomalyInvestigationDialog({
                       </ol>
                     </div>
 
-                    <Button
-                      onClick={() => onExecuteAction(action.id)}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                      size="sm"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      {action.automated ? 'Execute Automatically' : 'Start Manual Process'}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => onExecuteAction(action.id)}
+                        className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                        size="sm"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        {action.automated ? 'Execute Now' : 'Start Process'}
+                      </Button>
+                      <Button
+                        onClick={() => onScheduleAction(action.id)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <CalendarClock className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </Card>
                 ))}
               </TabsContent>

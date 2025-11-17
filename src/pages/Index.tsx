@@ -8,15 +8,22 @@ import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
 import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
 import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvestigationDialog';
 import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/components/dashboard/RemediationExecutionDialog';
+import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialog';
+import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
+import { RemediationAction } from '@/types/diagnostics';
+import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
 const Index = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [investigatingAnomaly, setInvestigatingAnomaly] = useState<Anomaly | null>(null);
   const [executionState, setExecutionState] = useState<ExecutionState | null>(null);
   const [executionDialogOpen, setExecutionDialogOpen] = useState(false);
+  const [schedulingAction, setSchedulingAction] = useState<RemediationAction | null>(null);
+  const [scheduledActions, setScheduledActions] = useState<ScheduledAction[]>([]);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -179,6 +186,120 @@ const Index = () => {
     }, 3000);
   };
 
+  const handleScheduleAction = (actionId: string) => {
+    const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
+    const action = diagnosticData?.remediation_actions.find(a => a.id === actionId);
+    if (!action) return;
+    setSchedulingAction(action);
+  };
+
+  const handleSchedule = (actionId: string, schedule: Schedule) => {
+    const anomaly = investigatingAnomaly;
+    if (!anomaly) return;
+
+    const action = mockDiagnosticData[anomaly.id]?.remediation_actions.find(a => a.id === actionId);
+    if (!action) return;
+
+    // Calculate next execution time
+    const calculateNextExecution = (schedule: Schedule): string => {
+      const baseDate = schedule.scheduledTime ? new Date(schedule.scheduledTime) : new Date();
+      
+      if (schedule.type === 'once') {
+        return baseDate.toISOString();
+      }
+
+      if (schedule.recurrence) {
+        const { pattern, interval } = schedule.recurrence;
+        let nextDate = baseDate;
+
+        switch (pattern) {
+          case 'hourly':
+            nextDate = addHours(baseDate, interval);
+            break;
+          case 'daily':
+            nextDate = addDays(baseDate, interval);
+            break;
+          case 'weekly':
+            nextDate = addWeeks(baseDate, interval);
+            break;
+          case 'monthly':
+            nextDate = addMonths(baseDate, interval);
+            break;
+        }
+
+        return nextDate.toISOString();
+      }
+
+      return baseDate.toISOString();
+    };
+
+    const newScheduledAction: ScheduledAction = {
+      id: `sched-${Date.now()}`,
+      actionId: action.id,
+      actionTitle: action.title,
+      actionDescription: action.description,
+      projectId: anomaly.project,
+      projectName: anomaly.project,
+      schedule,
+      enabled: true,
+      createdAt: new Date().toISOString(),
+      nextExecution: calculateNextExecution(schedule),
+      executionCount: 0,
+      status: 'active',
+    };
+
+    setScheduledActions([...scheduledActions, newScheduledAction]);
+    setSchedulingAction(null);
+
+    toast.success('Action Scheduled', {
+      description: `${action.title} will execute ${schedule.type === 'once' ? 'once' : 'on a recurring schedule'}.`,
+    });
+  };
+
+  const handleToggleScheduledAction = (id: string, enabled: boolean) => {
+    setScheduledActions(
+      scheduledActions.map(action =>
+        action.id === id
+          ? { ...action, enabled, status: enabled ? 'active' : 'paused' as const }
+          : action
+      )
+    );
+    toast.info(enabled ? 'Action Enabled' : 'Action Paused', {
+      description: enabled ? 'The scheduled action is now active.' : 'The scheduled action has been paused.',
+    });
+  };
+
+  const handleExecuteScheduledAction = (id: string) => {
+    const scheduledAction = scheduledActions.find(a => a.id === id);
+    if (!scheduledAction) return;
+
+    toast.success('Executing Scheduled Action', {
+      description: `Running ${scheduledAction.actionTitle} immediately...`,
+    });
+
+    // Update execution stats
+    setTimeout(() => {
+      setScheduledActions(
+        scheduledActions.map(action =>
+          action.id === id
+            ? {
+                ...action,
+                lastExecuted: new Date().toISOString(),
+                executionCount: action.executionCount + 1,
+              }
+            : action
+        )
+      );
+    }, 2000);
+  };
+
+  const handleDeleteScheduledAction = (id: string) => {
+    setScheduledActions(scheduledActions.filter(action => action.id !== id));
+    toast.success('Scheduled Action Deleted', {
+      description: 'The scheduled action has been removed.',
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -277,6 +398,16 @@ const Index = () => {
           {/* Analytics Section */}
           <AnalyticsSection />
 
+          {/* Scheduled Actions */}
+          <section>
+            <ScheduledActionsCard
+              scheduledActions={scheduledActions}
+              onToggle={handleToggleScheduledAction}
+              onExecuteNow={handleExecuteScheduledAction}
+              onDelete={handleDeleteScheduledAction}
+            />
+          </section>
+
           {/* Quick Actions */}
           <section className="border-t border-border pt-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
@@ -316,6 +447,17 @@ const Index = () => {
         open={investigatingAnomaly !== null}
         onClose={() => setInvestigatingAnomaly(null)}
         onExecuteAction={handleExecuteAction}
+        onScheduleAction={handleScheduleAction}
+      />
+
+      {/* Schedule Action Dialog */}
+      <ScheduleActionDialog
+        action={schedulingAction}
+        projectId={investigatingAnomaly?.project || ''}
+        projectName={investigatingAnomaly?.project || ''}
+        open={schedulingAction !== null}
+        onClose={() => setSchedulingAction(null)}
+        onSchedule={handleSchedule}
       />
 
       {/* Remediation Execution Dialog */}
