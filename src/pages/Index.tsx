@@ -13,11 +13,14 @@ import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialo
 import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
 import { LiveMonitoringDialog } from '@/components/dashboard/LiveMonitoringDialog';
 import { ExecutionHistoryDialog } from '@/components/dashboard/ExecutionHistoryDialog';
+import { AlertManagementDialog } from '@/components/dashboard/AlertManagementDialog';
+import { AlertNotificationsPanel } from '@/components/dashboard/AlertNotificationsPanel';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
-import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History } from 'lucide-react';
+import { AlertRule, NotificationChannel, AlertNotification, AlertChannel } from '@/types/alerts';
+import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
@@ -41,6 +44,15 @@ const Index = () => {
     avgResponseTime: 0,
     errorCount: 0,
   });
+  const [alertRules, setAlertRules] = useState<AlertRule[]>([]);
+  const [notificationChannels, setNotificationChannels] = useState<NotificationChannel[]>([
+    { type: 'in_app', enabled: true, config: {} },
+    { type: 'email', enabled: false, config: { recipients: [] } },
+    { type: 'slack', enabled: false, config: {} },
+    { type: 'webhook', enabled: false, config: {} },
+  ]);
+  const [alertNotifications, setAlertNotifications] = useState<AlertNotification[]>([]);
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -275,6 +287,55 @@ const Index = () => {
     setExecutionHistory((prev) => [historyRecord, ...prev]);
   };
 
+  const handleAddAlertRule = (rule: Omit<AlertRule, 'id' | 'createdAt'>) => {
+    const newRule: AlertRule = {
+      ...rule,
+      id: `rule-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    setAlertRules([...alertRules, newRule]);
+    toast.success('Alert Rule Created', {
+      description: `"${rule.name}" will now monitor ${rule.metric}`,
+    });
+  };
+
+  const handleUpdateAlertRule = (id: string, updates: Partial<AlertRule>) => {
+    setAlertRules(alertRules.map(rule => rule.id === id ? { ...rule, ...updates } : rule));
+    toast.info('Alert Rule Updated');
+  };
+
+  const handleDeleteAlertRule = (id: string) => {
+    setAlertRules(alertRules.filter(rule => rule.id !== id));
+    toast.success('Alert Rule Deleted');
+  };
+
+  const handleUpdateNotificationChannel = (channel: NotificationChannel) => {
+    setNotificationChannels(
+      notificationChannels.map(c => c.type === channel.type ? channel : c)
+    );
+    toast.info('Notification Channel Updated');
+  };
+
+  const handleAcknowledgeAlert = (id: string) => {
+    setAlertNotifications(
+      alertNotifications.map(notification =>
+        notification.id === id
+          ? {
+              ...notification,
+              acknowledged: true,
+              acknowledgedAt: new Date().toISOString(),
+              acknowledgedBy: 'user',
+            }
+          : notification
+      )
+    );
+    toast.success('Alert Acknowledged');
+  };
+
+  const handleDismissAlert = (id: string) => {
+    setAlertNotifications(alertNotifications.filter(n => n.id !== id));
+  };
+
   const handleScheduleAction = (actionId: string) => {
     const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
     const action = diagnosticData?.remediation_actions.find(a => a.id === actionId);
@@ -409,6 +470,20 @@ const Index = () => {
                 variant="outline"
                 size="sm"
                 className="gap-2"
+                onClick={() => setAlertDialogOpen(true)}
+              >
+                <Bell className="w-4 h-4" />
+                Alerts
+                {alertNotifications.filter(n => !n.acknowledged).length > 0 && (
+                  <Badge variant="outline" className="ml-1 bg-destructive/10 text-destructive border-destructive">
+                    {alertNotifications.filter(n => !n.acknowledged).length}
+                  </Badge>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
                 onClick={() => setHistoryDialogOpen(true)}
               >
                 <History className="w-4 h-4" />
@@ -467,6 +542,15 @@ const Index = () => {
           {/* Anomaly Detection */}
           <section>
             <AnomalyDetectionCard anomalies={mockAnomalies} onInvestigate={handleInvestigate} />
+          </section>
+
+          {/* Alert Notifications */}
+          <section>
+            <AlertNotificationsPanel
+              notifications={alertNotifications}
+              onAcknowledge={handleAcknowledgeAlert}
+              onDismiss={handleDismissAlert}
+            />
           </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -586,6 +670,18 @@ const Index = () => {
         history={executionHistory}
         open={historyDialogOpen}
         onClose={() => setHistoryDialogOpen(false)}
+      />
+
+      {/* Alert Management Dialog */}
+      <AlertManagementDialog
+        rules={alertRules}
+        channels={notificationChannels}
+        open={alertDialogOpen}
+        onClose={() => setAlertDialogOpen(false)}
+        onAddRule={handleAddAlertRule}
+        onUpdateRule={handleUpdateAlertRule}
+        onDeleteRule={handleDeleteAlertRule}
+        onUpdateChannel={handleUpdateNotificationChannel}
       />
     </div>
   );
