@@ -7,6 +7,7 @@ import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialo
 import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
 import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
 import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvestigationDialog';
+import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/components/dashboard/RemediationExecutionDialog';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -14,6 +15,8 @@ import { toast } from 'sonner';
 const Index = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [investigatingAnomaly, setInvestigatingAnomaly] = useState<Anomaly | null>(null);
+  const [executionState, setExecutionState] = useState<ExecutionState | null>(null);
+  const [executionDialogOpen, setExecutionDialogOpen] = useState(false);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -23,9 +26,157 @@ const Index = () => {
   };
 
   const handleExecuteAction = (actionId: string) => {
-    toast.success('Remediation action initiated', {
-      description: `Action ${actionId} is now being executed automatically.`,
+    const anomaly = investigatingAnomaly;
+    if (!anomaly) return;
+
+    const diagnosticData = mockDiagnosticData[anomaly.id];
+    const action = diagnosticData?.remediation_actions.find(a => a.id === actionId);
+    if (!action) return;
+
+    // Initialize execution state
+    const initialState: ExecutionState = {
+      actionId: action.id,
+      actionTitle: action.title,
+      status: 'preparing',
+      currentStep: 0,
+      totalSteps: action.steps.length,
+      steps: action.steps.map((step, idx) => ({
+        id: `step-${idx}`,
+        description: step,
+        status: 'pending',
+      })),
+      canRollback: true,
+      progress: 0,
+      startTime: new Date().toISOString(),
+    };
+
+    setExecutionState(initialState);
+    setExecutionDialogOpen(true);
+
+    // Start execution simulation
+    setTimeout(() => executeNextStep(initialState), 1000);
+  };
+
+  const executeNextStep = (currentState: ExecutionState) => {
+    const nextStepIndex = currentState.steps.findIndex(s => s.status === 'pending');
+    if (nextStepIndex === -1 || currentState.status === 'paused') return;
+
+    // Update current step to running
+    const updatedState: ExecutionState = {
+      ...currentState,
+      status: 'running',
+      currentStep: nextStepIndex + 1,
+      steps: currentState.steps.map((step, idx) => 
+        idx === nextStepIndex 
+          ? { ...step, status: 'running', startTime: new Date().toISOString() }
+          : step
+      ),
+    };
+    setExecutionState(updatedState);
+
+    // Simulate step execution (2-4 seconds per step)
+    const executionTime = Math.random() * 2000 + 2000;
+    const shouldFail = Math.random() < 0.15; // 15% chance of failure
+
+    setTimeout(() => {
+      const finalStepStatus: ExecutionStep['status'] = shouldFail ? 'failed' : 'completed';
+      const completedSteps = nextStepIndex + (shouldFail ? 0 : 1);
+      const progress = Math.round((completedSteps / currentState.totalSteps) * 100);
+
+      const newState: ExecutionState = {
+        ...updatedState,
+        currentStep: nextStepIndex + 1,
+        progress,
+        steps: updatedState.steps.map((step, idx) => 
+          idx === nextStepIndex 
+            ? { 
+                ...step, 
+                status: finalStepStatus, 
+                endTime: new Date().toISOString(),
+                error: shouldFail ? 'Operation failed due to system constraint' : undefined
+              }
+            : step
+        ),
+      };
+
+      if (shouldFail) {
+        // Execution failed
+        const failedState: ExecutionState = {
+          ...newState,
+          status: 'failed',
+          endTime: new Date().toISOString(),
+        };
+        setExecutionState(failedState);
+        toast.error('Remediation Failed', {
+          description: `Step ${nextStepIndex + 1} failed. You can rollback changes.`,
+        });
+      } else if (nextStepIndex + 1 === currentState.totalSteps) {
+        // All steps completed
+        const completedState: ExecutionState = {
+          ...newState,
+          status: 'completed',
+          endTime: new Date().toISOString(),
+        };
+        setExecutionState(completedState);
+        toast.success('Remediation Completed', {
+          description: 'All steps executed successfully. The issue has been resolved.',
+        });
+      } else {
+        // Continue to next step
+        setExecutionState(newState);
+        setTimeout(() => executeNextStep(newState), 500);
+      }
+    }, executionTime);
+  };
+
+  const handlePauseExecution = () => {
+    if (!executionState) return;
+    setExecutionState({ ...executionState, status: 'paused' });
+    toast.info('Execution Paused', {
+      description: 'You can resume or rollback changes.',
     });
+  };
+
+  const handleResumeExecution = () => {
+    if (!executionState) return;
+    const resumedState = { ...executionState, status: 'running' as const };
+    setExecutionState(resumedState);
+    toast.info('Execution Resumed', {
+      description: 'Continuing with remediation steps.',
+    });
+    setTimeout(() => executeNextStep(resumedState), 500);
+  };
+
+  const handleRollback = () => {
+    if (!executionState) return;
+
+    const rollbackState: ExecutionState = {
+      ...executionState,
+      status: 'rolling_back',
+    };
+    setExecutionState(rollbackState);
+
+    toast.info('Rolling Back Changes', {
+      description: 'Reverting completed steps...',
+    });
+
+    // Simulate rollback process
+    setTimeout(() => {
+      const rolledBackState: ExecutionState = {
+        ...rollbackState,
+        status: 'rolled_back',
+        steps: rollbackState.steps.map(step => 
+          step.status === 'completed' 
+            ? { ...step, status: 'rolled_back' }
+            : step
+        ),
+        endTime: new Date().toISOString(),
+      };
+      setExecutionState(rolledBackState);
+      toast.success('Rollback Complete', {
+        description: 'All changes have been reverted successfully.',
+      });
+    }, 3000);
   };
 
   return (
@@ -165,6 +316,16 @@ const Index = () => {
         open={investigatingAnomaly !== null}
         onClose={() => setInvestigatingAnomaly(null)}
         onExecuteAction={handleExecuteAction}
+      />
+
+      {/* Remediation Execution Dialog */}
+      <RemediationExecutionDialog
+        execution={executionState}
+        open={executionDialogOpen}
+        onClose={() => setExecutionDialogOpen(false)}
+        onPause={handlePauseExecution}
+        onResume={handleResumeExecution}
+        onRollback={handleRollback}
       />
     </div>
   );
