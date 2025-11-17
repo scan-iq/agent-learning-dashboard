@@ -7,9 +7,10 @@ import { AlertTriangle, TrendingDown, TrendingUp, Clock, CheckCircle2 } from 'lu
 
 interface AnomalyDetectionCardProps {
   anomalies: Anomaly[];
+  onInvestigate: (anomaly: Anomaly) => void;
 }
 
-export function AnomalyDetectionCard({ anomalies }: AnomalyDetectionCardProps) {
+export function AnomalyDetectionCard({ anomalies, onInvestigate }: AnomalyDetectionCardProps) {
   const getAnomalyIcon = (type: Anomaly['type']) => {
     const icons = {
       health_drop: TrendingDown,
@@ -130,7 +131,12 @@ export function AnomalyDetectionCard({ anomalies }: AnomalyDetectionCardProps) {
                           {Math.abs(anomaly.deviation).toFixed(1)}% deviation
                         </span>
                       </div>
-                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-7 text-xs"
+                        onClick={() => onInvestigate(anomaly)}
+                      >
                         Investigate
                       </Button>
                       <Button variant="ghost" size="sm" className="h-7 text-xs">

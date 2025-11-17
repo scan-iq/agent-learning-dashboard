@@ -6,13 +6,27 @@ import { EventsFeed } from '@/components/dashboard/EventsFeed';
 import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialog';
 import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
 import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
-import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies } from '@/lib/mock-data';
+import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvestigationDialog';
+import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [investigatingAnomaly, setInvestigatingAnomaly] = useState<Anomaly | null>(null);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
+  const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
+
+  const handleInvestigate = (anomaly: Anomaly) => {
+    setInvestigatingAnomaly(anomaly);
+  };
+
+  const handleExecuteAction = (actionId: string) => {
+    toast.success('Remediation action initiated', {
+      description: `Action ${actionId} is now being executed automatically.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,7 +91,7 @@ const Index = () => {
 
           {/* Anomaly Detection */}
           <section>
-            <AnomalyDetectionCard anomalies={mockAnomalies} />
+            <AnomalyDetectionCard anomalies={mockAnomalies} onInvestigate={handleInvestigate} />
           </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -142,6 +156,15 @@ const Index = () => {
         project={selectedProject}
         open={selectedProjectId !== null}
         onClose={() => setSelectedProjectId(null)}
+      />
+
+      {/* Anomaly Investigation Dialog */}
+      <AnomalyInvestigationDialog
+        anomaly={investigatingAnomaly}
+        diagnosticData={diagnosticData}
+        open={investigatingAnomaly !== null}
+        onClose={() => setInvestigatingAnomaly(null)}
+        onExecuteAction={handleExecuteAction}
       />
     </div>
   );
