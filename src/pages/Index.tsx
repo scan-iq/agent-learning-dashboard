@@ -4,6 +4,7 @@ import { MetricCard } from '@/components/dashboard/MetricCard';
 import { ProjectCard } from '@/components/dashboard/ProjectCard';
 import { EventsFeed } from '@/components/dashboard/EventsFeed';
 import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialog';
+import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails } from '@/lib/mock-data';
 import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
 
@@ -101,6 +102,9 @@ const Index = () => {
               <EventsFeed events={mockEvents} />
             </section>
           </div>
+
+          {/* Analytics Section */}
+          <AnalyticsSection />
 
           {/* Quick Actions */}
           <section className="border-t border-border pt-6">

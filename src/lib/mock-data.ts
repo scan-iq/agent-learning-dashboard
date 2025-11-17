@@ -96,6 +96,51 @@ export const mockEvents: IrisEvent[] = [
   },
 ];
 
+// Historical data for analytics charts
+export const mockHealthTrends = [
+  { time: '00:00', 'nfl-predictor': 94, 'microbiome': 82, 'beclever': 92 },
+  { time: '04:00', 'nfl-predictor': 95, 'microbiome': 79, 'beclever': 93 },
+  { time: '08:00', 'nfl-predictor': 93, 'microbiome': 78, 'beclever': 91 },
+  { time: '12:00', 'nfl-predictor': 96, 'microbiome': 80, 'beclever': 94 },
+  { time: '16:00', 'nfl-predictor': 97, 'microbiome': 77, 'beclever': 95 },
+  { time: '20:00', 'nfl-predictor': 96, 'microbiome': 78, 'beclever': 94 },
+];
+
+export const mockSuccessRates = [
+  { time: '00:00', 'nfl-predictor': 95.2, 'microbiome': 86.8, 'beclever': 96.1 },
+  { time: '04:00', 'nfl-predictor': 96.1, 'microbiome': 85.4, 'beclever': 96.8 },
+  { time: '08:00', 'nfl-predictor': 95.8, 'microbiome': 87.2, 'beclever': 96.5 },
+  { time: '12:00', 'nfl-predictor': 96.8, 'microbiome': 88.9, 'beclever': 97.2 },
+  { time: '16:00', 'nfl-predictor': 97.2, 'microbiome': 87.6, 'beclever': 97.5 },
+  { time: '20:00', 'nfl-predictor': 96.8, 'microbiome': 88.4, 'beclever': 97.2 },
+];
+
+export const mockExpertPerformance = [
+  { name: 'StatisticalAnalyzer', accuracy: 98.2, calls: 234, latency: 320 },
+  { name: 'TrendDetector', accuracy: 95.7, calls: 189, latency: 380 },
+  { name: 'PlayerMetrics', accuracy: 97.1, calls: 201, latency: 295 },
+  { name: 'BiomeClassifier', accuracy: 82.4, calls: 156, latency: 520 },
+  { name: 'TaxonomyMapper', accuracy: 91.3, calls: 142, latency: 445 },
+  { name: 'ContentAnalyzer', accuracy: 97.8, calls: 312, latency: 285 },
+  { name: 'EngagementPredictor', accuracy: 96.4, calls: 289, latency: 310 },
+];
+
+export const mockLatencyTrends = [
+  { time: '00:00', 'nfl-predictor': 350, 'microbiome': 530, 'beclever': 305 },
+  { time: '04:00', 'nfl-predictor': 340, 'microbiome': 520, 'beclever': 295 },
+  { time: '08:00', 'nfl-predictor': 345, 'microbiome': 540, 'beclever': 300 },
+  { time: '12:00', 'nfl-predictor': 338, 'microbiome': 515, 'beclever': 292 },
+  { time: '16:00', 'nfl-predictor': 342, 'microbiome': 521, 'beclever': 298 },
+  { time: '20:00', 'nfl-predictor': 342, 'microbiome': 521, 'beclever': 298 },
+];
+
+export const mockReflexionImpact = [
+  { category: 'Pattern Recognition', count: 45, avg_impact: 0.87 },
+  { category: 'Decision Optimization', count: 38, avg_impact: 0.92 },
+  { category: 'Error Correction', count: 29, avg_impact: 0.78 },
+  { category: 'Context Learning', count: 44, avg_impact: 0.85 },
+];
+
 export const mockProjectDetails: Record<string, ProjectDetails> = {
   'nfl-predictor': {
     ...mockProjects[0],
