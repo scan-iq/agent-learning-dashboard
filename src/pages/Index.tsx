@@ -10,6 +10,7 @@ import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvest
 import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/components/dashboard/RemediationExecutionDialog';
 import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialog';
 import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
+import { LiveMonitoringDialog } from '@/components/dashboard/LiveMonitoringDialog';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
@@ -24,6 +25,8 @@ const Index = () => {
   const [executionDialogOpen, setExecutionDialogOpen] = useState(false);
   const [schedulingAction, setSchedulingAction] = useState<RemediationAction | null>(null);
   const [scheduledActions, setScheduledActions] = useState<ScheduledAction[]>([]);
+  const [monitoringDialogOpen, setMonitoringDialogOpen] = useState(false);
+  const [currentActionTitle, setCurrentActionTitle] = useState('');
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -59,6 +62,8 @@ const Index = () => {
 
     setExecutionState(initialState);
     setExecutionDialogOpen(true);
+    setCurrentActionTitle(action.title);
+    setMonitoringDialogOpen(true);
 
     // Start execution simulation
     setTimeout(() => executeNextStep(initialState), 1000);
@@ -114,6 +119,7 @@ const Index = () => {
           endTime: new Date().toISOString(),
         };
         setExecutionState(failedState);
+        setMonitoringDialogOpen(false);
         toast.error('Remediation Failed', {
           description: `Step ${nextStepIndex + 1} failed. You can rollback changes.`,
         });
@@ -125,6 +131,7 @@ const Index = () => {
           endTime: new Date().toISOString(),
         };
         setExecutionState(completedState);
+        setMonitoringDialogOpen(false);
         toast.success('Remediation Completed', {
           description: 'All steps executed successfully. The issue has been resolved.',
         });
@@ -468,6 +475,14 @@ const Index = () => {
         onPause={handlePauseExecution}
         onResume={handleResumeExecution}
         onRollback={handleRollback}
+      />
+
+      {/* Live Monitoring Dialog */}
+      <LiveMonitoringDialog
+        open={monitoringDialogOpen}
+        onClose={() => setMonitoringDialogOpen(false)}
+        actionTitle={currentActionTitle}
+        isExecuting={executionState?.status === 'running' || executionState?.status === 'preparing'}
       />
     </div>
   );
