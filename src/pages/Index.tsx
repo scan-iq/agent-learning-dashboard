@@ -5,7 +5,8 @@ import { ProjectCard } from '@/components/dashboard/ProjectCard';
 import { EventsFeed } from '@/components/dashboard/EventsFeed';
 import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialog';
 import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
-import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails } from '@/lib/mock-data';
+import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
+import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies } from '@/lib/mock-data';
 import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
 
 const Index = () => {
@@ -72,6 +73,11 @@ const Index = () => {
                 icon={Brain}
               />
             </div>
+          </section>
+
+          {/* Anomaly Detection */}
+          <section>
+            <AnomalyDetectionCard anomalies={mockAnomalies} />
           </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
