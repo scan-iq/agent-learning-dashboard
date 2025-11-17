@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { MetricCard } from '@/components/dashboard/MetricCard';
 import { ProjectCard } from '@/components/dashboard/ProjectCard';
 import { EventsFeed } from '@/components/dashboard/EventsFeed';
@@ -11,10 +12,12 @@ import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/com
 import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialog';
 import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
 import { LiveMonitoringDialog } from '@/components/dashboard/LiveMonitoringDialog';
+import { ExecutionHistoryDialog } from '@/components/dashboard/ExecutionHistoryDialog';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
-import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw } from 'lucide-react';
+import { ExecutionHistoryRecord } from '@/types/history';
+import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
@@ -27,6 +30,17 @@ const Index = () => {
   const [scheduledActions, setScheduledActions] = useState<ScheduledAction[]>([]);
   const [monitoringDialogOpen, setMonitoringDialogOpen] = useState(false);
   const [currentActionTitle, setCurrentActionTitle] = useState('');
+  const [executionHistory, setExecutionHistory] = useState<ExecutionHistoryRecord[]>([]);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [currentExecutionStartTime, setCurrentExecutionStartTime] = useState('');
+  const [currentExecutionMetrics, setCurrentExecutionMetrics] = useState({
+    avgCpu: 0,
+    avgMemory: 0,
+    peakCpu: 0,
+    peakMemory: 0,
+    avgResponseTime: 0,
+    errorCount: 0,
+  });
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -64,6 +78,17 @@ const Index = () => {
     setExecutionDialogOpen(true);
     setCurrentActionTitle(action.title);
     setMonitoringDialogOpen(true);
+    setCurrentExecutionStartTime(new Date().toISOString());
+    
+    // Reset metrics
+    setCurrentExecutionMetrics({
+      avgCpu: 0,
+      avgMemory: 0,
+      peakCpu: 0,
+      peakMemory: 0,
+      avgResponseTime: 0,
+      errorCount: 0,
+    });
 
     // Start execution simulation
     setTimeout(() => executeNextStep(initialState), 1000);
@@ -120,6 +145,10 @@ const Index = () => {
         };
         setExecutionState(failedState);
         setMonitoringDialogOpen(false);
+        
+        // Add to history
+        addExecutionToHistory(failedState, 'failed', 'Operation failed due to system constraint', nextStepIndex);
+        
         toast.error('Remediation Failed', {
           description: `Step ${nextStepIndex + 1} failed. You can rollback changes.`,
         });
@@ -132,6 +161,10 @@ const Index = () => {
         };
         setExecutionState(completedState);
         setMonitoringDialogOpen(false);
+        
+        // Add to history
+        addExecutionToHistory(completedState, 'completed');
+        
         toast.success('Remediation Completed', {
           description: 'All steps executed successfully. The issue has been resolved.',
         });
@@ -187,10 +220,59 @@ const Index = () => {
         endTime: new Date().toISOString(),
       };
       setExecutionState(rolledBackState);
+      
+      // Add to history
+      addExecutionToHistory(rolledBackState, 'rolled_back', undefined, undefined, 'User initiated rollback due to execution failure');
+      
       toast.success('Rollback Complete', {
         description: 'All changes have been reverted successfully.',
       });
     }, 3000);
+  };
+
+  const addExecutionToHistory = (
+    state: ExecutionState,
+    status: 'completed' | 'failed' | 'rolled_back',
+    errorMessage?: string,
+    failedStep?: number,
+    rollbackReason?: string
+  ) => {
+    const endTime = new Date().toISOString();
+    const duration = (new Date(endTime).getTime() - new Date(currentExecutionStartTime).getTime()) / 1000;
+
+    // Generate realistic metrics based on execution
+    const avgCpu = 40 + Math.random() * 40;
+    const avgMemory = 50 + Math.random() * 30;
+    const peakCpu = avgCpu + 10 + Math.random() * 20;
+    const peakMemory = avgMemory + 10 + Math.random() * 15;
+
+    const historyRecord: ExecutionHistoryRecord = {
+      id: `exec-${Date.now()}`,
+      actionId: state.actionId,
+      actionTitle: state.actionTitle,
+      projectId: investigatingAnomaly?.project || 'unknown',
+      projectName: investigatingAnomaly?.project || 'Unknown Project',
+      startTime: currentExecutionStartTime,
+      endTime,
+      duration,
+      status,
+      totalSteps: state.totalSteps,
+      completedSteps: state.steps.filter(s => s.status === 'completed').length,
+      failedStep,
+      errorMessage,
+      rollbackReason,
+      metrics: {
+        avgCpuUsage: avgCpu,
+        avgMemoryUsage: avgMemory,
+        peakCpuUsage: peakCpu,
+        peakMemoryUsage: peakMemory,
+        avgResponseTime: 100 + Math.random() * 200,
+        errorCount: status === 'failed' ? 1 : 0,
+      },
+      executedBy: 'manual',
+    };
+
+    setExecutionHistory((prev) => [historyRecord, ...prev]);
   };
 
   const handleScheduleAction = (actionId: string) => {
@@ -323,6 +405,20 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => setHistoryDialogOpen(true)}
+              >
+                <History className="w-4 h-4" />
+                History
+                {executionHistory.length > 0 && (
+                  <Badge variant="outline" className="ml-1 bg-primary/10 text-primary border-primary">
+                    {executionHistory.length}
+                  </Badge>
+                )}
+              </Button>
               <Button variant="outline" size="sm" className="gap-2">
                 <RefreshCw className="w-4 h-4" />
                 Refresh
@@ -483,6 +579,13 @@ const Index = () => {
         onClose={() => setMonitoringDialogOpen(false)}
         actionTitle={currentActionTitle}
         isExecuting={executionState?.status === 'running' || executionState?.status === 'preparing'}
+      />
+
+      {/* Execution History Dialog */}
+      <ExecutionHistoryDialog
+        history={executionHistory}
+        open={historyDialogOpen}
+        onClose={() => setHistoryDialogOpen(false)}
       />
     </div>
   );
