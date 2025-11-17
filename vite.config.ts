@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@foxruv/agent-learning-core": path.resolve(__dirname, "../agent-learning-core/src"),
     },
   },
 }));

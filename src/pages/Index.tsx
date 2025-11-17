@@ -19,8 +19,10 @@ import { AlertAnalyticsDashboard } from '@/components/dashboard/AlertAnalyticsDa
 import { AlertSentimentPanel } from '@/components/dashboard/AlertSentimentPanel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
+import { mockProjectDetails, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
 import { useAlertSentiment } from '@/hooks/useAlertSentiment';
+import { useIrisOverview } from '@/hooks/useIrisData';
+import { Skeleton } from '@/components/ui/skeleton';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
@@ -31,6 +33,24 @@ import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
 const Index = () => {
+  // Fetch real data from Supabase
+  const { data: overviewData, isLoading, error } = useIrisOverview();
+
+  // Extract data with fallbacks
+  const mockOverviewMetrics = overviewData?.metrics || {
+    total_projects: 0,
+    healthy_projects: 0,
+    warning_projects: 0,
+    critical_projects: 0,
+    total_runs_today: 0,
+    avg_success_rate: 0,
+    active_experts: 0,
+    total_reflexions: 0,
+  };
+  const mockProjects = overviewData?.projects || [];
+  const mockEvents = overviewData?.events || [];
+  const mockAnomalies = overviewData?.anomalies || [];
+
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [investigatingAnomaly, setInvestigatingAnomaly] = useState<Anomaly | null>(null);
   const [executionState, setExecutionState] = useState<ExecutionState | null>(null);
@@ -588,6 +608,62 @@ const Index = () => {
       description: 'The scheduled action has been removed.',
     });
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-control-bg">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center glow-effect">
+                <Activity className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">IRIS Prime</h1>
+                <p className="text-sm text-muted-foreground">AI Operations Control Plane</p>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto px-6 py-8">
+          <div className="space-y-8">
+            <section>
+              <h2 className="text-lg font-semibold text-foreground mb-4">System Overview</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="border border-border rounded-lg p-6">
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-8 w-16 mb-2" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                ))}
+              </div>
+            </section>
+            <section>
+              <Skeleton className="h-64 w-full rounded-lg" />
+            </section>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <AlertTriangle className="w-16 h-16 text-destructive mx-auto" />
+          <h2 className="text-2xl font-bold text-foreground">Failed to Load Dashboard</h2>
+          <p className="text-muted-foreground">
+            {error instanceof Error ? error.message : 'An unknown error occurred'}
+          </p>
+          <Button onClick={() => window.location.reload()}>Reload Page</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
