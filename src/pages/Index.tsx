@@ -16,7 +16,11 @@ import { ExecutionHistoryDialog } from '@/components/dashboard/ExecutionHistoryD
 import { AlertManagementDialog } from '@/components/dashboard/AlertManagementDialog';
 import { AlertNotificationsPanel } from '@/components/dashboard/AlertNotificationsPanel';
 import { AlertAnalyticsDashboard } from '@/components/dashboard/AlertAnalyticsDashboard';
+import { AlertSentimentPanel } from '@/components/dashboard/AlertSentimentPanel';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockOverviewMetrics, mockProjects, mockEvents, mockProjectDetails, mockAnomalies, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
+import { useAlertSentiment } from '@/hooks/useAlertSentiment';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
@@ -56,6 +60,16 @@ const Index = () => {
   const [alertNotifications, setAlertNotifications] = useState<AlertNotification[]>([]);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [alertAnalyticsOpen, setAlertAnalyticsOpen] = useState(false);
+  const [sentimentPanelOpen, setSentimentPanelOpen] = useState(false);
+
+  // Alert sentiment analysis
+  const {
+    recordFeedback,
+    analyzeSentiment,
+    applyRecommendation,
+    clearFeedback,
+    feedbackCount,
+  } = useAlertSentiment(alertRules);
 
   const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -320,6 +334,11 @@ const Index = () => {
   };
 
   const handleAcknowledgeAlert = (id: string) => {
+    const alert = alertNotifications.find(a => a.id === id);
+    if (alert) {
+      recordFeedback(alert, 'acknowledged');
+    }
+    
     setAlertNotifications(
       alertNotifications.map(notification =>
         notification.id === id
@@ -336,7 +355,13 @@ const Index = () => {
   };
 
   const handleDismissAlert = (id: string) => {
+    const alert = alertNotifications.find(a => a.id === id);
+    if (alert) {
+      recordFeedback(alert, 'dismissed');
+    }
+    
     setAlertNotifications(alertNotifications.filter(n => n.id !== id));
+    toast.success('Alert Dismissed');
   };
 
   // Calculate alert analytics
@@ -436,6 +461,19 @@ const Index = () => {
       channelPerformance,
     };
   }, [alertNotifications, alertRules]);
+
+  // Handle applying sentiment recommendations
+  const handleApplySentimentRecommendation = (ruleId: string) => {
+    const recommendation = applyRecommendation(ruleId);
+    if (recommendation) {
+      handleUpdateAlertRule(ruleId, {
+        threshold: recommendation.recommendedThreshold,
+      });
+      toast.success('Threshold Updated', {
+        description: `${recommendation.ruleName} threshold adjusted to ${recommendation.recommendedThreshold} based on learning.`,
+      });
+    }
+  };
 
   const handleScheduleAction = (actionId: string) => {
     const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
@@ -575,6 +613,20 @@ const Index = () => {
               >
                 <BarChart3 className="w-4 h-4" />
                 Analytics
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => setSentimentPanelOpen(true)}
+              >
+                <Brain className="w-4 h-4" />
+                Learning
+                {feedbackCount > 0 && (
+                  <Badge variant="outline" className="ml-1 bg-primary/10 text-primary border-primary">
+                    {feedbackCount}
+                  </Badge>
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -801,6 +853,27 @@ const Index = () => {
         open={alertAnalyticsOpen}
         onClose={() => setAlertAnalyticsOpen(false)}
       />
+
+      {/* Alert Sentiment Analysis Dialog */}
+      <Dialog open={sentimentPanelOpen} onOpenChange={setSentimentPanelOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Alert Sentiment Analysis & Learning</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[70vh]">
+            <AlertSentimentPanel
+              analysis={analyzeSentiment()}
+              onApplyRecommendation={handleApplySentimentRecommendation}
+              onClearData={() => {
+                clearFeedback();
+                toast.success('Learning Data Cleared', {
+                  description: 'All sentiment analysis data has been reset.',
+                });
+              }}
+            />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
