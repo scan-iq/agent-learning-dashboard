@@ -13,7 +13,19 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@foxruv/agent-learning-core": path.resolve(__dirname, "../agent-learning-core/src"),
     },
   },
+  define: {
+    'process.env': JSON.stringify({}),
+    'process.env.NODE_ENV': JSON.stringify(mode),
+    'global': 'globalThis',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+        process: JSON.stringify({ env: {} }),
+      }
+    }
+  }
 }));

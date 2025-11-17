@@ -19,6 +19,21 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      // Polyfill for Node.js globals in browser
+      window.process = window.process || {
+        env: {},
+        versions: {
+          node: '18.0.0',
+          modules: '108',
+          v8: '10.0.0'
+        },
+        platform: 'browser',
+        browser: true
+      };
+      window.global = window.global || window;
+      window.Buffer = window.Buffer || { isBuffer: () => false };
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

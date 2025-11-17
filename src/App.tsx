@@ -3,47 +3,64 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { initSupabase } from "@foxruv/agent-learning-core";
+import { checkIpAccess } from "@/lib/ipCheck";
 
 const queryClient = new QueryClient();
 
-// Initialize Supabase on app startup
-function initializeSupabase() {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (supabaseUrl && supabaseKey) {
-    try {
-      initSupabase(supabaseUrl, supabaseKey, {
-        projectId: 'iris-prime-console',
-        tenantId: 'default',
-      });
-      console.log('✅ Supabase initialized successfully');
-    } catch (error) {
-      console.error('❌ Failed to initialize Supabase:', error);
-    }
-  } else {
-    console.warn('⚠️ Supabase credentials not found. Using mock data.');
-  }
+// Initialize app
+const apiBase = import.meta.env.VITE_API_BASE;
+if (apiBase) {
+  console.log('✅ IRIS Prime Dashboard - API Mode');
+  console.log('🔌 API:', apiBase);
 }
 
-// Call on module load
-initializeSupabase();
+const AppContent = () => {
+  const [ipAllowed, setIpAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkIpAccess().then(setIpAllowed);
+  }, []);
+
+  // Loading state
+  if (ipAllowed === null) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0a0a0a', color: '#fff' }}>
+        <div>Checking access...</div>
+      </div>
+    );
+  }
+
+  // Blocked state
+  if (!ipAllowed) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0a0a0a', color: '#fff', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ fontSize: '48px' }}>🚫</div>
+        <div style={{ fontSize: '24px', fontWeight: 'bold' }}>Access Denied</div>
+        <div style={{ color: '#888' }}>Your IP address is not authorized to access this dashboard</div>
+      </div>
+    );
+  }
+
+  // Allowed - show dashboard
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppContent />
     </TooltipProvider>
   </QueryClientProvider>
 );

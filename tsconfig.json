@@ -4,9 +4,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@foxruv/agent-learning-core": ["../agent-learning-core/src/index.ts"],
-      "@foxruv/agent-learning-core/*": ["../agent-learning-core/src/*"]
+      "@/*": ["./src/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

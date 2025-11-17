@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "IRIS_AUTO_TELEMETRY": "true",
+    "IRIS_AUTO_CONSENSUS": "true",
+    "IRIS_HOOKS_ENABLED": "true",
+    "IRIS_DUAL_WRITE": "true",
+    "IRIS_PATTERN_LEARNING": "true",
+    "IRIS_REFLEXION_TRACKING": "true",
+    "IRIS_NOTIFICATION_ENABLED": "true",
+    "NODE_ENV": "development"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run :*)",
+      "Bash(npm test:*)",
+      "Bash(npm install:*)",
+      "Bash(node :*)",
+      "Bash(npx :*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "mcp__*"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/pre-edit.sh --file \"${file_path}\" --track-changes"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/pre-bash.sh --command \"${command}\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/post-edit.sh --file \"${file_path}\" --log-telemetry --update-patterns --check-consensus"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/post-bash.sh --command \"${command}\" --exit-code \"${exit_code}\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/session-start.sh --load-context --check-alerts"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/helpers/session-end.sh --store-reflexions --sync-supabase --generate-report"
+          }
+        ]
+      }
+    ]
+  },
+  "includeCoAuthoredBy": true
+}

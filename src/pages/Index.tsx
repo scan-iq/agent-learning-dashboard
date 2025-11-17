@@ -19,9 +19,11 @@ import { AlertAnalyticsDashboard } from '@/components/dashboard/AlertAnalyticsDa
 import { AlertSentimentPanel } from '@/components/dashboard/AlertSentimentPanel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockProjectDetails, mockDiagnosticData, Anomaly } from '@/lib/mock-data';
+import { mockDiagnosticData } from '@/lib/diagnostic-mock-data';
+import type { Anomaly } from '@foxruv/agent-learning-core';
 import { useAlertSentiment } from '@/hooks/useAlertSentiment';
-import { useIrisOverview } from '@/hooks/useIrisData';
+import { useIrisOverview, useProjectDetails } from '@/hooks/useIrisData';
+import { useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RemediationAction } from '@/types/diagnostics';
 import { Schedule, ScheduledAction } from '@/types/scheduling';
@@ -33,6 +35,9 @@ import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
 const Index = () => {
+  // React Query client for cache invalidation
+  const queryClient = useQueryClient();
+
   // Fetch real data from Supabase
   const { data: overviewData, isLoading, error } = useIrisOverview();
 
@@ -91,8 +96,60 @@ const Index = () => {
     feedbackCount,
   } = useAlertSentiment(alertRules);
 
-  const selectedProject = selectedProjectId ? mockProjectDetails[selectedProjectId] : null;
+  // Fetch selected project details
+  const { data: selectedProject } = useProjectDetails(selectedProjectId);
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
+
+  // Button handlers
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
+    toast.success('Data refreshed');
+  };
+
+  const handleEvaluateAll = async () => {
+    toast.loading('Evaluating all projects...', { id: 'evaluate-all' });
+    try {
+      // Call the evaluate all API endpoint
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:3000'}/api/iris/evaluate-all`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) throw new Error('Evaluation failed');
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
+      toast.success('All projects evaluated successfully', { id: 'evaluate-all' });
+    } catch (error) {
+      console.error('Evaluation error:', error);
+      toast.error('Evaluation failed', { id: 'evaluate-all' });
+    }
+  };
+
+  const handleAutoRetrain = async () => {
+    toast.loading('Starting auto-retrain...', { id: 'retrain' });
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:3000'}/api/iris/retrain`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) throw new Error('Retrain failed');
+
+      toast.success('Auto-retrain started', { id: 'retrain' });
+    } catch (error) {
+      console.error('Retrain error:', error);
+      toast.error('Auto-retrain failed', { id: 'retrain' });
+    }
+  };
+
+  const handleFindPatterns = () => {
+    toast.info('Pattern discovery will open in a new dialog');
+    // TODO: Open patterns dialog or navigate to patterns page
+  };
+
+  const handleRotationReport = () => {
+    toast.info('Rotation report generation coming soon');
+    // TODO: Generate and display rotation report
+  };
 
   const handleInvestigate = (anomaly: Anomaly) => {
     setInvestigatingAnomaly(anomaly);
@@ -732,11 +789,11 @@ const Index = () => {
                   </Badge>
                 )}
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={handleRefresh}>
                 <RefreshCw className="w-4 h-4" />
                 Refresh
               </Button>
-              <Button size="sm" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button size="sm" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleEvaluateAll}>
                 <Play className="w-4 h-4" />
                 Evaluate All
               </Button>
@@ -837,19 +894,19 @@ const Index = () => {
           <section className="border-t border-border pt-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" onClick={handleEvaluateAll}>
                 <Play className="w-5 h-5 text-primary" />
                 <span className="text-sm">Evaluate All</span>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" onClick={handleAutoRetrain}>
                 <RefreshCw className="w-5 h-5 text-primary" />
                 <span className="text-sm">Auto Retrain</span>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" onClick={handleFindPatterns}>
                 <Brain className="w-5 h-5 text-primary" />
                 <span className="text-sm">Find Patterns</span>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" onClick={handleRotationReport}>
                 <Activity className="w-5 h-5 text-primary" />
                 <span className="text-sm">Rotation Report</span>
               </Button>
