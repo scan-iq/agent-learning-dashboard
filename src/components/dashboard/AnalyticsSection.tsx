@@ -16,10 +16,10 @@ import {
   Cell,
 } from 'recharts';
 import {
-  mockHealthTrends,
+  mockHealthTrendsWithAnomalies,
   mockSuccessRates,
   mockExpertPerformance,
-  mockLatencyTrends,
+  mockLatencyTrendsWithAnomalies,
   mockReflexionImpact,
 } from '@/lib/mock-data';
 
@@ -52,9 +52,15 @@ export function AnalyticsSection() {
 
         <TabsContent value="health" className="mt-4">
           <Card className="p-6 bg-card border-border">
-            <h3 className="text-base font-semibold text-foreground mb-4">Project Health Score Over Time</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-foreground">Project Health Score Over Time</h3>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="w-3 h-3 rounded-full bg-destructive animate-pulse-glow" />
+                <span>Anomalies detected</span>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={mockHealthTrends}>
+              <AreaChart data={mockHealthTrendsWithAnomalies}>
                 <defs>
                   <linearGradient id="colorNFL" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={projectColors['nfl-predictor']} stopOpacity={0.3} />
@@ -106,6 +112,11 @@ export function AnalyticsSection() {
                 />
               </AreaChart>
             </ResponsiveContainer>
+            <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+              <p className="text-xs text-warning font-medium">
+                ⚠️ Anomalies detected at 08:00 and 16:00 - Health score deviations from expected patterns
+              </p>
+            </div>
           </Card>
         </TabsContent>
 
@@ -190,9 +201,15 @@ export function AnalyticsSection() {
 
         <TabsContent value="latency" className="mt-4">
           <Card className="p-6 bg-card border-border">
-            <h3 className="text-base font-semibold text-foreground mb-4">Average Latency Trends (ms)</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-foreground">Average Latency Trends (ms)</h3>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="w-3 h-3 rounded-full bg-warning animate-pulse-glow" />
+                <span>Latency spike detected</span>
+              </div>
+            </div>
             <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={mockLatencyTrends}>
+              <LineChart data={mockLatencyTrendsWithAnomalies}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />
@@ -227,6 +244,11 @@ export function AnalyticsSection() {
                 />
               </LineChart>
             </ResponsiveContainer>
+            <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+              <p className="text-xs text-warning font-medium">
+                ⚠️ Latency spike detected at 08:00 - Microbiome project showing 28.6% increase above baseline
+              </p>
+            </div>
           </Card>
         </TabsContent>
 

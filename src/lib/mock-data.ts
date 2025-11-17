@@ -141,6 +141,95 @@ export const mockReflexionImpact = [
   { category: 'Context Learning', count: 44, avg_impact: 0.85 },
 ];
 
+// Anomaly detection data
+export interface Anomaly {
+  id: string;
+  timestamp: string;
+  project: string;
+  type: 'health_drop' | 'latency_spike' | 'success_drop' | 'expert_failure';
+  severity: 'critical' | 'warning' | 'info';
+  metric: string;
+  value: number;
+  expected: number;
+  deviation: number;
+  description: string;
+  resolved: boolean;
+}
+
+export const mockAnomalies: Anomaly[] = [
+  {
+    id: 'anom_1',
+    timestamp: new Date(Date.now() - 900000).toISOString(), // 15 min ago
+    project: 'microbiome',
+    type: 'health_drop',
+    severity: 'warning',
+    metric: 'Health Score',
+    value: 77,
+    expected: 85,
+    deviation: -9.4,
+    description: 'Health score dropped below expected threshold',
+    resolved: false,
+  },
+  {
+    id: 'anom_2',
+    timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
+    project: 'microbiome',
+    type: 'latency_spike',
+    severity: 'warning',
+    metric: 'Avg Latency',
+    value: 540,
+    expected: 420,
+    deviation: 28.6,
+    description: 'Latency increased significantly above baseline',
+    resolved: false,
+  },
+  {
+    id: 'anom_3',
+    timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    project: 'microbiome',
+    type: 'expert_failure',
+    severity: 'critical',
+    metric: 'BiomeClassifier Accuracy',
+    value: 82.4,
+    expected: 91.0,
+    deviation: -9.5,
+    description: 'Expert accuracy dropped below acceptable threshold',
+    resolved: false,
+  },
+  {
+    id: 'anom_4',
+    timestamp: new Date(Date.now() - 5400000).toISOString(), // 90 min ago
+    project: 'nfl-predictor',
+    type: 'latency_spike',
+    severity: 'info',
+    metric: 'Avg Latency',
+    value: 380,
+    expected: 340,
+    deviation: 11.8,
+    description: 'Minor latency increase detected',
+    resolved: true,
+  },
+];
+
+// Add anomaly markers to chart data
+export const mockHealthTrendsWithAnomalies = [
+  { time: '00:00', 'nfl-predictor': 94, 'microbiome': 82, 'beclever': 92 },
+  { time: '04:00', 'nfl-predictor': 95, 'microbiome': 79, 'beclever': 93 },
+  { time: '08:00', 'nfl-predictor': 93, 'microbiome': 78, 'beclever': 91, anomaly: true },
+  { time: '12:00', 'nfl-predictor': 96, 'microbiome': 80, 'beclever': 94 },
+  { time: '16:00', 'nfl-predictor': 97, 'microbiome': 77, 'beclever': 95, anomaly: true },
+  { time: '20:00', 'nfl-predictor': 96, 'microbiome': 78, 'beclever': 94 },
+];
+
+export const mockLatencyTrendsWithAnomalies = [
+  { time: '00:00', 'nfl-predictor': 350, 'microbiome': 530, 'beclever': 305 },
+  { time: '04:00', 'nfl-predictor': 340, 'microbiome': 520, 'beclever': 295 },
+  { time: '08:00', 'nfl-predictor': 345, 'microbiome': 540, 'beclever': 300, anomaly: true },
+  { time: '12:00', 'nfl-predictor': 338, 'microbiome': 515, 'beclever': 292 },
+  { time: '16:00', 'nfl-predictor': 342, 'microbiome': 521, 'beclever': 298 },
+  { time: '20:00', 'nfl-predictor': 342, 'microbiome': 521, 'beclever': 298 },
+];
+
 export const mockProjectDetails: Record<string, ProjectDetails> = {
   'nfl-predictor': {
     ...mockProjects[0],
