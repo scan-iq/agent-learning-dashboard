@@ -29,40 +29,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch iris reports (main data source)
-    const { data: reports, error: reportsError } = await supabase
-      .from('iris_reports')
+    // Fetch expert signatures (actual data source)
+    const { data: experts, error: expertsError } = await supabase
+      .from('expert_signatures')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
+      .eq('active', true)
+      .order('created_at', { ascending: false });
 
-    if (reportsError) throw reportsError;
+    if (expertsError) throw expertsError;
 
-    // Basic aggregation
-    const projects = new Set(reports?.map(r => r.project) || []).size;
-    const healthyProjects = reports?.filter(r => r.overall_health === 'healthy').length || 0;
+    // Group by project
+    const projectMap = new Map();
+    experts?.forEach(expert => {
+      if (!projectMap.has(expert.project)) {
+        projectMap.set(expert.project, {
+          project: expert.project,
+          experts: [],
+          avgAccuracy: 0,
+          lastUpdate: expert.updated_at,
+        });
+      }
+      const proj = projectMap.get(expert.project);
+      proj.experts.push(expert);
+      proj.lastUpdate = expert.updated_at > proj.lastUpdate ? expert.updated_at : proj.lastUpdate;
+    });
+
+    const projects = Array.from(projectMap.values());
+    const totalExperts = experts?.length || 0;
+
+    // Calculate average accuracy across all experts
+    const avgAccuracy = experts?.reduce((acc, e) => {
+      return acc + (e.performance_metrics?.accuracy || 0);
+    }, 0) / (totalExperts || 1);
 
     return res.status(200).json({
       metrics: {
-        total_projects: projects,
-        healthy_projects: healthyProjects,
+        total_projects: projects.length,
+        healthy_projects: projects.length, // All active
         warning_projects: 0,
         critical_projects: 0,
-        total_runs_today: reports?.length || 0,
-        avg_success_rate: 0,
-        active_experts: 0,
+        total_runs_today: 0,
+        avg_success_rate: avgAccuracy,
+        active_experts: totalExperts,
         total_reflexions: 0,
       },
-      projects: reports?.slice(0, 10).map(r => ({
-        project: r.project,
-        overallHealth: r.overall_health,
-        latestHealthScore: r.health_score || 0,
-        lastReportDate: r.created_at,
-        totalRuns: 1,
-        avgSuccessRate: r.avg_success_rate || 0,
-        activeExperts: r.total_experts || 0,
-        totalReflexions: r.total_reflexions || 0,
-      })) || [],
+      projects: projects.map(p => ({
+        project: p.project,
+        overallHealth: 'healthy',
+        latestHealthScore: p.avgAccuracy || 0.75,
+        lastReportDate: p.lastUpdate,
+        totalRuns: 0,
+        avgSuccessRate: avgAccuracy,
+        activeExperts: p.experts.length,
+        totalReflexions: 0,
+      })),
       events: [],
       anomalies: [],
     });
