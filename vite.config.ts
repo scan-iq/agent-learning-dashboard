@@ -20,7 +20,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   define: {
-    'process.env': JSON.stringify({}),
     'process.env.NODE_ENV': JSON.stringify(mode),
     'global': 'globalThis',
     '__filename': JSON.stringify(''),
@@ -30,7 +29,6 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       define: {
         global: 'globalThis',
-        process: JSON.stringify({ env: {} }),
         __filename: '""',
         __dirname: '""',
       }
