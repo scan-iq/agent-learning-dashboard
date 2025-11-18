@@ -15,7 +15,7 @@
     "mcp:status": "tsx scripts/mcp/cli.ts status",
     "iris:init-agentdb": "tsx scripts/iris-services/init-agentdb.ts",
     "iris:reasoning-bank": "tsx scripts/iris-services/reasoning-bank-integration.ts",
-    "iris:populate-data": "tsx scripts/iris-services/populate-using-agent-learning-core.ts",
+    "iris:populate-data": "tsx scripts/iris-services/populate-from-nfl-data.ts",
     "iris:populate-simple": "tsx scripts/iris-services/populate-simple.ts",
     "iris:populate-full": "tsx scripts/iris-services/populate-dashboard-data.ts",
     "iris:model-runs": "tsx scripts/iris-services/model-run-logger.ts",

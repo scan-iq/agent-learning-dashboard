@@ -15,10 +15,7 @@ import {
   createConsensusLineageTracker,
   createReflexionMonitor,
 } from '@foxruv/agent-learning-core';
-import dotenv from 'dotenv';
-import path from 'path';
-
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+// Environment variables loaded from .env automatically by tsx
 
 async function populateData() {
   console.log('═══════════════════════════════════════════════════════');
