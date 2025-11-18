@@ -10,38 +10,13 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  build: {
-    rollupOptions: {
-      external: [
-        // Exclude server-only modules from browser bundle
-        /agentdb.*cli/,
-      ],
-    },
-  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Browser polyfills for Node.js modules
-      "path": "path-browserify",
-      "fs": path.resolve(__dirname, "./src/polyfills/fs"),
-      "crypto": path.resolve(__dirname, "./src/polyfills/crypto.ts"),
-      // Mock server-only packages
-      "agentdb": path.resolve(__dirname, "./src/polyfills/agentdb.ts"),
     },
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(mode),
     'global': 'globalThis',
-    '__filename': JSON.stringify(''),
-    '__dirname': JSON.stringify(''),
   },
-  optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: 'globalThis',
-        __filename: '""',
-        __dirname: '""',
-      }
-    }
-  }
 }));

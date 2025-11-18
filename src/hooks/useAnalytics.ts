@@ -1,19 +1,9 @@
 /**
  * React Query hooks for analytics data
- * Uses agent-learning-core for data access
+ * Calls API routes - NO server-side code imported!
  */
 
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import {
-  getHealthTrends,
-  getSuccessRateTrends,
-  getLatencyTrends,
-  getReflexionImpactStats,
-  getProjectExpertStats,
-  getExpertPerformanceTrends,
-  getTokenConsumptionTrends,
-  getErrorDistribution,
-} from '@foxruv/agent-learning-core';
 
 /**
  * Hook for health trends over time
@@ -23,7 +13,9 @@ export function useHealthTrends(projectId: string | null, hours: number = 24) {
     queryKey: ['health-trends', projectId, hours],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getHealthTrends(projectId, hours);
+      const response = await fetch(`/api/analytics/health-trends?projectId=${projectId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 60000, // 1 minute
@@ -38,7 +30,9 @@ export function useSuccessRateTrends(projectId: string | null, hours: number = 2
     queryKey: ['success-rate-trends', projectId, hours],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getSuccessRateTrends(projectId, hours);
+      const response = await fetch(`/api/analytics/success-rate?projectId=${projectId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 60000,
@@ -53,7 +47,9 @@ export function useLatencyTrends(projectId: string | null, hours: number = 24) {
     queryKey: ['latency-trends', projectId, hours],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getLatencyTrends(projectId, hours);
+      const response = await fetch(`/api/analytics/latency?projectId=${projectId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 60000,
@@ -68,7 +64,9 @@ export function useReflexionImpact(projectId: string | null) {
     queryKey: ['reflexion-impact', projectId],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getReflexionImpactStats(projectId);
+      const response = await fetch(`/api/analytics/reflexion-impact?projectId=${projectId}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 120000, // 2 minutes
@@ -83,7 +81,9 @@ export function useExpertPerformance(projectId: string | null) {
     queryKey: ['expert-performance', projectId],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getProjectExpertStats(projectId);
+      const response = await fetch(`/api/analytics/expert-stats?projectId=${projectId}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 60000,
@@ -102,7 +102,9 @@ export function useExpertPerformanceTrends(
     queryKey: ['expert-performance-trends', projectId, expertId, hours],
     queryFn: async () => {
       if (!projectId || !expertId) return [];
-      return await getExpertPerformanceTrends(projectId, expertId, hours);
+      const response = await fetch(`/api/analytics/expert-performance?projectId=${projectId}&expertId=${expertId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId && !!expertId,
     staleTime: 60000,
@@ -112,12 +114,14 @@ export function useExpertPerformanceTrends(
 /**
  * Hook for token consumption trends
  */
-export function useTokenConsumptionTrends(projectId: string | null, hours: number = 24) {
+export function useTokenConsumption(projectId: string | null, hours: number = 24) {
   return useQuery({
-    queryKey: ['token-consumption-trends', projectId, hours],
+    queryKey: ['token-consumption', projectId, hours],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getTokenConsumptionTrends(projectId, hours);
+      const response = await fetch(`/api/analytics/token-consumption?projectId=${projectId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
     staleTime: 60000,
@@ -127,53 +131,16 @@ export function useTokenConsumptionTrends(projectId: string | null, hours: numbe
 /**
  * Hook for error distribution
  */
-export function useErrorDistribution(projectId: string | null) {
+export function useErrorDistribution(projectId: string | null, hours: number = 24) {
   return useQuery({
-    queryKey: ['error-distribution', projectId],
+    queryKey: ['error-distribution', projectId, hours],
     queryFn: async () => {
       if (!projectId) return [];
-      return await getErrorDistribution(projectId);
+      const response = await fetch(`/api/analytics/error-distribution?projectId=${projectId}&hours=${hours}`);
+      if (!response.ok) return [];
+      return await response.json();
     },
     enabled: !!projectId,
-    staleTime: 120000,
+    staleTime: 60000,
   });
-}
-
-/**
- * Hook for all analytics data at once (for dashboard)
- */
-export function useProjectAnalytics(projectId: string | null, hours: number = 24) {
-  const healthTrends = useHealthTrends(projectId, hours);
-  const successRateTrends = useSuccessRateTrends(projectId, hours);
-  const latencyTrends = useLatencyTrends(projectId, hours);
-  const reflexionImpact = useReflexionImpact(projectId);
-  const expertPerformance = useExpertPerformance(projectId);
-  const tokenConsumption = useTokenConsumptionTrends(projectId, hours);
-  const errorDistribution = useErrorDistribution(projectId);
-
-  return {
-    healthTrends,
-    successRateTrends,
-    latencyTrends,
-    reflexionImpact,
-    expertPerformance,
-    tokenConsumption,
-    errorDistribution,
-    isLoading:
-      healthTrends.isLoading ||
-      successRateTrends.isLoading ||
-      latencyTrends.isLoading ||
-      reflexionImpact.isLoading ||
-      expertPerformance.isLoading ||
-      tokenConsumption.isLoading ||
-      errorDistribution.isLoading,
-    isError:
-      healthTrends.isError ||
-      successRateTrends.isError ||
-      latencyTrends.isError ||
-      reflexionImpact.isError ||
-      expertPerformance.isError ||
-      tokenConsumption.isError ||
-      errorDistribution.isError,
-  };
 }

@@ -1,40 +1,17 @@
 /**
  * React Query hooks for IRIS Prime dashboard
- * Uses agent-learning-core for data access
+ * Calls API routes - NO server-side code imported!
  */
 
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Project, OverviewMetrics, IrisEvent, ProjectDetails } from '@/types/iris';
-import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase';
-import {
-  getOverviewMetrics,
-  getAllProjectsSummary,
-  getRecentEvents,
-  getAnomalies,
-  getLatestIrisReport,
-  getIrisReportHistory,
-  getProjectExpertStats,
-  initSupabase,
-  type StoredIrisReport,
-  type SystemEvent,
-  type Anomaly,
-} from '@foxruv/agent-learning-core';
 
-// API Base URL (fallback)
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
-
-// Initialize Supabase on module load with browser-safe config
-if (isSupabaseConfigured()) {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (supabaseUrl && supabaseKey) {
-    initSupabase(supabaseUrl, supabaseKey, {
-      projectId: 'iris-prime-console',
-      tenantId: 'default',
-    });
-  }
-}
+/**
+ * Type imports only (not bundled into browser)
+ */
+type Anomaly = any; // Will get from API
+type SystemEvent = any;
+type StoredIrisReport = any;
 
 /**
  * Overview data structure
@@ -47,7 +24,7 @@ export interface IrisOverviewData {
 }
 
 /**
- * Transform project summary from agent-learning-core to frontend Project type
+ * Transform project summary to frontend Project type
  */
 function transformProjectSummary(summary: any): Project {
   return {
@@ -60,7 +37,7 @@ function transformProjectSummary(summary: any): Project {
     success_rate: summary.avgSuccessRate,
     active_experts: summary.activeExperts,
     reflexions_count: summary.totalReflexions,
-    avg_latency: 0, // Will be populated from expert stats if needed
+    avg_latency: 0,
   };
 }
 
@@ -80,14 +57,6 @@ function transformEvent(event: SystemEvent): IrisEvent {
 }
 
 /**
- * Transform agent anomaly to frontend Anomaly type
- * Note: Types are now the same, so this is just a pass-through
- */
-function transformAnomaly(anomaly: Anomaly): Anomaly {
-  return anomaly;
-}
-
-/**
  * Query keys for react-query
  */
 export const irisQueryKeys = {
@@ -100,59 +69,56 @@ export const irisQueryKeys = {
 
 /**
  * Main hook for dashboard overview data
+ * Calls /api/overview endpoint (server-side)
  */
 export function useIrisOverview(): UseQueryResult<IrisOverviewData> {
   return useQuery({
     queryKey: irisQueryKeys.overview,
     queryFn: async () => {
-      // Use agent-learning-core functions if Supabase is configured
-      if (isSupabaseConfigured()) {
-        try {
-          // Fetch all data in parallel
-          const [metrics, projectSummaries, events, anomalies] = await Promise.all([
-            getOverviewMetrics(),
-            getAllProjectsSummary(),
-            getRecentEvents(undefined, 20),
-            getAnomalies(undefined, 20),
-          ]);
+      try {
+        const response = await fetch('/api/overview');
 
-          console.log('✅ Fetched overview data:', {
-            metrics,
-            projects: projectSummaries.length,
-            events: events.length,
-            anomalies: anomalies.length,
-          });
-
-          return {
-            metrics,
-            projects: projectSummaries.map(transformProjectSummary),
-            events: events.map(transformEvent),
-            anomalies: anomalies.map(transformAnomaly),
-          };
-        } catch (error) {
-          console.error('Error fetching overview data:', error);
-          throw error;
+        if (!response.ok) {
+          throw new Error(`API error: ${response.statusText}`);
         }
-      }
 
-      // Fallback to empty data if Supabase is not configured
-      return {
-        metrics: {
-          total_projects: 0,
-          healthy_projects: 0,
-          warning_projects: 0,
-          critical_projects: 0,
-          total_runs_today: 0,
-          avg_success_rate: 0,
-          active_experts: 0,
-          total_reflexions: 0,
-        },
-        projects: [],
-        events: [],
-        anomalies: [],
-      };
+        const data = await response.json();
+
+        console.log('✅ Fetched overview data from API:', {
+          metrics: data.metrics,
+          projects: data.projects.length,
+          events: data.events.length,
+          anomalies: data.anomalies.length,
+        });
+
+        return {
+          metrics: data.metrics,
+          projects: data.projects.map(transformProjectSummary),
+          events: data.events.map(transformEvent),
+          anomalies: data.anomalies,
+        };
+      } catch (error) {
+        console.error('Error fetching overview data:', error);
+
+        // Return empty data on error
+        return {
+          metrics: {
+            total_projects: 0,
+            healthy_projects: 0,
+            warning_projects: 0,
+            critical_projects: 0,
+            total_runs_today: 0,
+            avg_success_rate: 0,
+            active_experts: 0,
+            total_reflexions: 0,
+          },
+          projects: [],
+          events: [],
+          anomalies: [],
+        };
+      }
     },
-    refetchInterval: 30000,
+    refetchInterval: 30000, // Refresh every 30 seconds
     staleTime: 10000,
   });
 }
@@ -164,48 +130,23 @@ export function useProjectDetails(projectId: string | null): UseQueryResult<Proj
   return useQuery({
     queryKey: irisQueryKeys.project(projectId || ''),
     queryFn: async () => {
-      if (!projectId || !isSupabaseConfigured()) return null;
+      if (!projectId) return null;
 
       try {
-        // Fetch project data in parallel
-        const [report, history, expertStats] = await Promise.all([
-          getLatestIrisReport(projectId),
-          getIrisReportHistory({ projectId, limit: 10 }),
-          getProjectExpertStats(projectId),
-        ]);
+        const response = await fetch(`/api/project/${projectId}`);
 
-        if (!report) return null;
+        if (!response.ok) {
+          throw new Error(`API error: ${response.statusText}`);
+        }
 
-        // Transform to ProjectDetails type
-        const projectDetails: ProjectDetails = {
-          id: projectId,
-          name: projectId,
-          status: report.overall_health as ProjectDetails['status'],
-          health_score: report.health_score,
-          last_run: report.created_at,
-          total_runs: history.length,
-          success_rate: report.avg_success_rate || 0,
-          active_experts: report.total_experts || 0,
-          reflexions_count: report.total_reflexions || 0,
-          avg_latency: 0,
-          recent_errors: [], // Can be populated from logs if needed
-          expert_performance: expertStats.map(stat => ({
-            expert_id: stat.expertId,
-            name: stat.expertName,
-            accuracy: stat.accuracy,
-            calls: stat.calls,
-          })),
-          recent_reflexions: [], // Can be populated from reflexions table if needed
-          consensus_history: [], // Can be populated from consensus table if needed
-        };
-
-        return projectDetails;
+        const data = await response.json();
+        return data;
       } catch (error) {
         console.error(`Error fetching project details for ${projectId}:`, error);
         return null;
       }
     },
-    enabled: !!projectId && isSupabaseConfigured(),
+    enabled: !!projectId,
     staleTime: 15000,
   });
 }
@@ -218,10 +159,10 @@ export function useAnomalies() {
     queryKey: irisQueryKeys.anomalies,
     queryFn: async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/iris/anomalies`);
+        const response = await fetch('/api/anomalies');
         if (!response.ok) throw new Error('Failed to fetch anomalies');
         const data = await response.json();
-        return data.data || [];
+        return data || [];
       } catch (error) {
         console.error('Error fetching anomalies:', error);
         return [];
@@ -239,10 +180,10 @@ export function useEvents() {
     queryKey: irisQueryKeys.events,
     queryFn: async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/iris/events?limit=20`);
+        const response = await fetch('/api/events?limit=20');
         if (!response.ok) throw new Error('Failed to fetch events');
         const data = await response.json();
-        return data.data || [];
+        return data || [];
       } catch (error) {
         console.error('Error fetching events:', error);
         return [];
@@ -261,10 +202,10 @@ export function usePatterns() {
     queryKey: irisQueryKeys.patterns,
     queryFn: async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/iris/patterns`);
+        const response = await fetch('/api/patterns');
         if (!response.ok) throw new Error('Failed to fetch patterns');
         const data = await response.json();
-        return data.data || [];
+        return data || [];
       } catch (error) {
         console.error('Error fetching patterns:', error);
         return [];
