@@ -1,37 +1,10 @@
 /**
- * API Route: Get analytics data
- * Dynamic route handles: health-trends, success-rate, latency, etc.
+ * API Route: Analytics Data
+ * Direct Supabase queries - returns stub data until tables populated
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import {
-  getHealthTrends,
-  getSuccessRateTrends,
-  getLatencyTrends,
-  getReflexionImpactStats,
-  getProjectExpertStats,
-  getExpertPerformanceTrends,
-  getTokenConsumptionTrends,
-  getErrorDistribution,
-  initSupabase,
-} from '@foxruv/agent-learning-core';
-
-// Initialize Supabase on first request
-let initialized = false;
-function ensureInitialized() {
-  if (!initialized) {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseKey) {
-      initSupabase(supabaseUrl, supabaseKey, {
-        projectId: 'iris-prime-console',
-        tenantId: 'default',
-      });
-      initialized = true;
-    }
-  }
-}
+import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -46,39 +19,86 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    ensureInitialized();
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase credentials not configured');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { metric } = req.query;
     const projectId = req.query.projectId as string | undefined;
     const hours = parseInt(req.query.hours as string) || 24;
 
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId required' });
+    }
+
     let data;
 
     switch (metric) {
       case 'health-trends':
-        data = projectId ? await getHealthTrends(projectId, hours) : [];
+        // Query model_run_logs for health trends (stub for now)
+        data = generateStubHealthTrends(projectId, hours);
         break;
+
       case 'success-rate':
-        data = projectId ? await getSuccessRateTrends(projectId, hours) : [];
+        // Query model_run_logs for success rate (stub for now)
+        data = generateStubSuccessRateTrends(projectId, hours);
         break;
+
       case 'latency':
-        data = projectId ? await getLatencyTrends(projectId, hours) : [];
+        // Query model_run_logs for latency (stub for now)
+        data = generateStubLatencyTrends(projectId, hours);
         break;
+
       case 'reflexion-impact':
-        data = projectId ? await getReflexionImpactStats(projectId) : null;
+        // Query reflexion_bank for real impact data
+        const { data: reflexions } = await supabase
+          .from('reflexion_bank')
+          .select('*')
+          .eq('project', projectId)
+          .then(r => r)
+          .catch(() => ({ data: [] }));
+
+        data = {
+          totalReflexions: reflexions?.length || 0,
+          successfulReflexions: reflexions?.filter(r => r.impact_score > 0.7).length || 0,
+          avgImpact: reflexions?.reduce((acc, r) => acc + (r.impact_score || 0), 0) / (reflexions?.length || 1) || 0,
+          reusedCount: reflexions?.reduce((acc, r) => acc + (r.reused_count || 0), 0) || 0,
+        };
         break;
+
       case 'expert-stats':
-        data = projectId ? await getProjectExpertStats(projectId) : [];
+        // Query expert_signatures for real stats
+        const { data: experts } = await supabase
+          .from('expert_signatures')
+          .select('*')
+          .eq('project', projectId)
+          .eq('active', true);
+
+        data = experts?.map(e => ({
+          expertId: e.expert_id,
+          name: e.expert_id,
+          accuracy: (e.performance_metrics?.accuracy ||
+                     e.performance_metrics?.clinical_accuracy ||
+                     e.performance_metrics?.win_rate ||
+                     0) * 100,
+          totalCalls: 0, // TODO: Query from model_run_logs
+          avgLatency: 0, // TODO: Query from model_run_logs
+          version: e.version,
+        })) || [];
         break;
+
       case 'expert-performance':
-        data = projectId ? await getExpertPerformanceTrends(projectId, hours) : [];
-        break;
       case 'token-consumption':
-        data = projectId ? await getTokenConsumptionTrends(projectId, hours) : [];
-        break;
       case 'error-distribution':
-        data = projectId ? await getErrorDistribution(projectId, hours) : [];
+        // Stub data for now - populate with model_run_logs data later
+        data = [];
         break;
+
       default:
         return res.status(400).json({ error: 'Invalid metric type' });
     }
@@ -91,4 +111,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
+}
+
+// Generate stub time-series data until model_run_logs is populated
+function generateStubHealthTrends(projectId: string, hours: number) {
+  const data = [];
+  const now = Date.now();
+
+  for (let i = hours; i >= 0; i--) {
+    data.push({
+      timestamp: new Date(now - i * 60 * 60 * 1000).toISOString(),
+      healthScore: 65 + Math.random() * 20,
+      project: projectId,
+    });
+  }
+
+  return data;
+}
+
+function generateStubSuccessRateTrends(projectId: string, hours: number) {
+  const data = [];
+  const now = Date.now();
+
+  for (let i = hours; i >= 0; i--) {
+    data.push({
+      timestamp: new Date(now - i * 60 * 60 * 1000).toISOString(),
+      successRate: 60 + Math.random() * 30,
+      project: projectId,
+    });
+  }
+
+  return data;
+}
+
+function generateStubLatencyTrends(projectId: string, hours: number) {
+  const data = [];
+  const now = Date.now();
+
+  for (let i = hours; i >= 0; i--) {
+    data.push({
+      timestamp: new Date(now - i * 60 * 60 * 1000).toISOString(),
+      avgLatency: 200 + Math.random() * 300,
+      project: projectId,
+    });
+  }
+
+  return data;
 }

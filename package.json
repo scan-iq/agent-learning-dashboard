@@ -12,7 +12,14 @@
     "iris": "tsx scripts/mcp/cli.ts",
     "generate:wrappers": "tsx scripts/mcp/generate-wrappers.ts",
     "mcp:list": "tsx scripts/mcp/cli.ts list",
-    "mcp:status": "tsx scripts/mcp/cli.ts status"
+    "mcp:status": "tsx scripts/mcp/cli.ts status",
+    "iris:init-agentdb": "tsx scripts/iris-services/init-agentdb.ts",
+    "iris:reasoning-bank": "tsx scripts/iris-services/reasoning-bank-integration.ts",
+    "iris:populate-data": "tsx scripts/iris-services/populate-dashboard-data.ts",
+    "iris:model-runs": "tsx scripts/iris-services/model-run-logger.ts",
+    "iris:consensus": "tsx scripts/iris-services/consensus-tracker.ts",
+    "iris:events": "tsx scripts/iris-services/system-events-logger.ts",
+    "iris:anomalies": "tsx scripts/iris-services/anomaly-detector.ts"
   },
   "dependencies": {
     "@foxruv/agent-learning-core": "^0.3.0",
