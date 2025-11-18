@@ -109,16 +109,20 @@ const Index = () => {
   const handleEvaluateAll = async () => {
     toast.loading('Evaluating all projects...', { id: 'evaluate-all' });
     try {
-      // Call the evaluate all API endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:3000'}/api/iris/evaluate-all`, {
+      // Call the IRIS Prime evaluate all endpoint
+      const response = await fetch('/api/iris/evaluate-all', {
         method: 'POST',
       });
 
       if (!response.ok) throw new Error('Evaluation failed');
 
+      const data = await response.json();
+
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
-      toast.success('All projects evaluated successfully', { id: 'evaluate-all' });
+      toast.success(`Evaluated ${data.summary.total} projects successfully`, { id: 'evaluate-all' });
+
+      console.log('Evaluation results:', data);
     } catch (error) {
       console.error('Evaluation error:', error);
       toast.error('Evaluation failed', { id: 'evaluate-all' });
@@ -128,27 +132,69 @@ const Index = () => {
   const handleAutoRetrain = async () => {
     toast.loading('Starting auto-retrain...', { id: 'retrain' });
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:3000'}/api/iris/retrain`, {
+      const response = await fetch('/api/iris/retrain', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) throw new Error('Retrain failed');
 
-      toast.success('Auto-retrain started', { id: 'retrain' });
+      const data = await response.json();
+
+      toast.success(`Retrained ${data.summary.successful} experts successfully`, { id: 'retrain' });
+
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
+
+      console.log('Retrain results:', data);
     } catch (error) {
       console.error('Retrain error:', error);
       toast.error('Auto-retrain failed', { id: 'retrain' });
     }
   };
 
-  const handleFindPatterns = () => {
-    toast.info('Pattern discovery will open in a new dialog');
-    // TODO: Open patterns dialog or navigate to patterns page
+  const handleFindPatterns = async () => {
+    toast.loading('Discovering patterns...', { id: 'patterns' });
+    try {
+      const response = await fetch('/api/iris/patterns');
+
+      if (!response.ok) throw new Error('Pattern discovery failed');
+
+      const data = await response.json();
+
+      toast.success(`Found ${data.summary.total} patterns!`, { id: 'patterns' });
+
+      // TODO: Open patterns dialog with data
+      console.log('Patterns discovered:', data);
+    } catch (error) {
+      console.error('Pattern discovery error:', error);
+      toast.error('Pattern discovery failed', { id: 'patterns' });
+    }
   };
 
-  const handleRotationReport = () => {
-    toast.info('Rotation report generation coming soon');
-    // TODO: Generate and display rotation report
+  const handleRotationReport = async () => {
+    if (!selectedProjectId) {
+      toast.error('Please select a project first');
+      return;
+    }
+
+    toast.loading('Generating rotation report...', { id: 'rotation' });
+    try {
+      const response = await fetch(`/api/iris/rotation?projectId=${selectedProjectId}`);
+
+      if (!response.ok) throw new Error('Rotation report failed');
+
+      const data = await response.json();
+
+      toast.success(`Generated report with ${data.summary.total} recommendations`, { id: 'rotation' });
+
+      // TODO: Open rotation report dialog with data
+      console.log('Rotation report:', data);
+    } catch (error) {
+      console.error('Rotation report error:', error);
+      toast.error('Rotation report generation failed', { id: 'rotation' });
+    }
   };
 
   const handleInvestigate = (anomaly: Anomaly) => {
