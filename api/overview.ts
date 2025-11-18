@@ -1,35 +1,10 @@
 /**
  * API Route: Get dashboard overview data
- * Runs on Vercel serverless function (Node.js environment)
+ * Uses Supabase directly (no agent-learning-core to avoid agentdb issues)
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import {
-  getOverviewMetrics,
-  getAllProjectsSummary,
-  getRecentEvents,
-  getAnomalies,
-  initSupabase,
-} from '@foxruv/agent-learning-core';
-
-// Initialize Supabase on first request
-let initialized = false;
-function ensureInitialized() {
-  if (!initialized) {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseKey) {
-      initSupabase(supabaseUrl, supabaseKey, {
-        projectId: 'iris-prime-console',
-        tenantId: 'default',
-      });
-      initialized = true;
-    } else {
-      throw new Error('Supabase credentials not configured');
-    }
-  }
-}
+import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -45,21 +20,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    ensureInitialized();
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-    // Fetch all data in parallel
-    const [metrics, projectSummaries, events, anomalies] = await Promise.all([
-      getOverviewMetrics(),
-      getAllProjectsSummary(),
-      getRecentEvents(undefined, 20),
-      getAnomalies(undefined, 20),
-    ]);
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase credentials not configured');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch iris reports (main data source)
+    const { data: reports, error: reportsError } = await supabase
+      .from('iris_reports')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (reportsError) throw reportsError;
+
+    // Basic aggregation
+    const projects = new Set(reports?.map(r => r.project) || []).size;
+    const healthyProjects = reports?.filter(r => r.overall_health === 'healthy').length || 0;
 
     return res.status(200).json({
-      metrics,
-      projects: projectSummaries,
-      events,
-      anomalies,
+      metrics: {
+        total_projects: projects,
+        healthy_projects: healthyProjects,
+        warning_projects: 0,
+        critical_projects: 0,
+        total_runs_today: reports?.length || 0,
+        avg_success_rate: 0,
+        active_experts: 0,
+        total_reflexions: 0,
+      },
+      projects: reports?.slice(0, 10).map(r => ({
+        project: r.project,
+        overallHealth: r.overall_health,
+        latestHealthScore: r.health_score || 0,
+        lastReportDate: r.created_at,
+        totalRuns: 1,
+        avgSuccessRate: r.avg_success_rate || 0,
+        activeExperts: r.total_experts || 0,
+        totalReflexions: r.total_reflexions || 0,
+      })) || [],
+      events: [],
+      anomalies: [],
     });
   } catch (error) {
     console.error('Error in /api/overview:', error);
