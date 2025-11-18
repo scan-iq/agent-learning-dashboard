@@ -14,7 +14,7 @@ import {
   getLatestIrisReport,
   getIrisReportHistory,
   getProjectExpertStats,
-  initSupabaseFromEnv,
+  initSupabase,
   type StoredIrisReport,
   type SystemEvent,
   type Anomaly,
@@ -23,9 +23,17 @@ import {
 // API Base URL (fallback)
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
 
-// Initialize Supabase on module load
+// Initialize Supabase on module load with browser-safe config
 if (isSupabaseConfigured()) {
-  initSupabaseFromEnv();
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && supabaseKey) {
+    initSupabase(supabaseUrl, supabaseKey, {
+      projectId: 'iris-prime-console',
+      tenantId: 'default',
+    });
+  }
 }
 
 /**

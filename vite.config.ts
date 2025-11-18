@@ -10,6 +10,14 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  build: {
+    rollupOptions: {
+      external: [
+        // Exclude server-only modules from browser bundle
+        /agentdb.*cli/,
+      ],
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -17,6 +25,8 @@ export default defineConfig(({ mode }) => ({
       "path": "path-browserify",
       "fs": path.resolve(__dirname, "./src/polyfills/fs"),
       "crypto": path.resolve(__dirname, "./src/polyfills/crypto.ts"),
+      // Mock server-only packages
+      "agentdb": path.resolve(__dirname, "./src/polyfills/agentdb.ts"),
     },
   },
   define: {
