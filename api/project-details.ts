@@ -35,15 +35,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fetch all project data in parallel
-    const [
-      { data: experts },
-      { data: reports },
-      { data: reflexions },
-    ] = await Promise.all([
+    const [expertsResult, reportsResult, reflexionsResult] = await Promise.all([
       supabase.from('expert_signatures').select('*').eq('project', id).eq('active', true),
-      supabase.from('iris_reports').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10).catch(() => ({ data: [] })),
-      supabase.from('reflexion_bank').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10).catch(() => ({ data: [] })),
+      supabase.from('iris_reports').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10)
+        .then(r => r)
+        .catch(() => ({ data: [], error: null })),
+      supabase.from('reflexion_bank').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10)
+        .then(r => r)
+        .catch(() => ({ data: [], error: null })),
     ]);
+
+    const experts = expertsResult.data;
+    const reports = reportsResult.data;
+    const reflexions = reflexionsResult.data;
 
     if (!experts || experts.length === 0) {
       return res.status(404).json({

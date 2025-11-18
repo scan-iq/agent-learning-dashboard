@@ -31,23 +31,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { projectId, minSuccessRate = 0.7, limit = 20 } = req.query;
 
     // Try to fetch from stored_patterns table
-    const { data: patterns } = await supabase
+    const patternsResult = await supabase
       .from('stored_patterns')
       .select('*')
       .gte('success_rate', parseFloat(minSuccessRate as string))
       .order('success_rate', { ascending: false })
       .limit(parseInt(limit as string))
-      .catch(() => ({ data: null }));
+      .then(r => r)
+      .catch(() => ({ data: null, error: null }));
+
+    const patterns = patternsResult.data;
 
     // If no stored_patterns table, derive from reflexions
     let derivedPatterns: any[] = [];
     if (!patterns || patterns.length === 0) {
-      const { data: reflexions } = await supabase
+      const reflexionsResult = await supabase
         .from('reflexion_bank')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50)
-        .catch(() => ({ data: [] }));
+        .then(r => r)
+        .catch(() => ({ data: [], error: null }));
+
+      const reflexions = reflexionsResult.data;
 
       // Extract patterns from successful reflexions
       derivedPatterns = reflexions?.map((ref, idx) => ({

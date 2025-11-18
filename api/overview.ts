@@ -30,15 +30,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fetch real data from multiple tables
-    const [
-      { data: experts },
-      { data: reports },
-      { data: reflexions },
-    ] = await Promise.all([
+    const [expertsResult, reportsResult, reflexionsResult] = await Promise.all([
       supabase.from('expert_signatures').select('*').eq('active', true),
       supabase.from('iris_reports').select('*').order('created_at', { ascending: false }).limit(100),
-      supabase.from('reflexion_bank').select('*').order('created_at', { ascending: false}).limit(20).catch(() => ({ data: [] })),
+      supabase.from('reflexion_bank').select('*').order('created_at', { ascending: false}).limit(20)
+        .then(r => r)
+        .catch(() => ({ data: [], error: null })),
     ]);
+
+    const experts = expertsResult.data;
+    const reports = reportsResult.data;
+    const reflexions = reflexionsResult.data;
 
     // Group by project and calculate metrics
     const projectMap = new Map();
