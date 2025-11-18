@@ -38,14 +38,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (expertsError) throw expertsError;
 
-    // Group by project
+    // Group by project and calculate per-project metrics
     const projectMap = new Map();
     experts?.forEach(expert => {
       if (!projectMap.has(expert.project)) {
         projectMap.set(expert.project, {
           project: expert.project,
           experts: [],
-          avgAccuracy: 0,
           lastUpdate: expert.updated_at,
         });
       }
@@ -54,34 +53,61 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       proj.lastUpdate = expert.updated_at > proj.lastUpdate ? expert.updated_at : proj.lastUpdate;
     });
 
-    const projects = Array.from(projectMap.values());
-    const totalExperts = experts?.length || 0;
+    // Calculate metrics from REAL data only
+    const projects = Array.from(projectMap.values()).map(p => {
+      // Calculate per-project accuracy from expert performance_metrics
+      const projectAccuracy = p.experts.reduce((acc: number, e: any) =>
+        acc + (e.performance_metrics?.accuracy || 0), 0) / p.experts.length;
 
-    // Calculate average accuracy across all experts
-    const avgAccuracy = experts?.reduce((acc, e) => {
+      // Determine health based on accuracy
+      let health: 'healthy' | 'warning' | 'critical';
+      if (projectAccuracy >= 0.8) health = 'healthy';
+      else if (projectAccuracy >= 0.6) health = 'warning';
+      else health = 'critical';
+
+      return {
+        project: p.project,
+        overallHealth: health,
+        latestHealthScore: projectAccuracy,
+        lastReportDate: p.lastUpdate,
+        totalRuns: 0, // TODO: Query model_run_logs when available
+        avgSuccessRate: projectAccuracy,
+        activeExperts: p.experts.length,
+        totalReflexions: 0, // TODO: Query reflexion_bank when available
+        experts: p.experts, // Include for detailed metrics
+      };
+    });
+
+    const totalExperts = experts?.length || 0;
+    const healthyCount = projects.filter(p => p.overallHealth === 'healthy').length;
+    const warningCount = projects.filter(p => p.overallHealth === 'warning').length;
+    const criticalCount = projects.filter(p => p.overallHealth === 'critical').length;
+
+    // Calculate global average accuracy
+    const globalAvgAccuracy = experts?.reduce((acc, e) => {
       return acc + (e.performance_metrics?.accuracy || 0);
     }, 0) / (totalExperts || 1);
 
     return res.status(200).json({
       metrics: {
         total_projects: projects.length,
-        healthy_projects: projects.length, // All active
-        warning_projects: 0,
-        critical_projects: 0,
-        total_runs_today: 0,
-        avg_success_rate: avgAccuracy,
+        healthy_projects: healthyCount,
+        warning_projects: warningCount,
+        critical_projects: criticalCount,
+        total_runs_today: 0, // TODO: Query model_run_logs for today's runs
+        avg_success_rate: globalAvgAccuracy,
         active_experts: totalExperts,
-        total_reflexions: 0,
+        total_reflexions: 0, // TODO: Query reflexion_bank total count
       },
       projects: projects.map(p => ({
         project: p.project,
-        overallHealth: 'healthy',
-        latestHealthScore: p.avgAccuracy || 0.75,
-        lastReportDate: p.lastUpdate,
-        totalRuns: 0,
-        avgSuccessRate: avgAccuracy,
-        activeExperts: p.experts.length,
-        totalReflexions: 0,
+        overallHealth: p.overallHealth,
+        latestHealthScore: p.latestHealthScore,
+        lastReportDate: p.lastReportDate,
+        totalRuns: p.totalRuns,
+        avgSuccessRate: p.avgSuccessRate,
+        activeExperts: p.activeExperts,
+        totalReflexions: p.totalReflexions,
       })),
       events: [],
       anomalies: [],
