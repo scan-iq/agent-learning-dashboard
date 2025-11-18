@@ -137,7 +137,9 @@ async function generateSampleRuns() {
 }
 
 // Run if called directly
-if (require.main === module) {
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+
+if (isMainModule) {
   generateSampleRuns()
     .then(() => {
       console.log('\n🎉 Model run logging complete!');

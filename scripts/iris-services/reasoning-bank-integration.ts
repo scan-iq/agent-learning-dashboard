@@ -128,7 +128,9 @@ async function syncMemoriesToSupabase(reasoningBank: HybridReasoningBank) {
 }
 
 // Run if called directly
-if (require.main === module) {
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+
+if (isMainModule) {
   (async () => {
     try {
       const reasoningBank = await initializeReasoningBank();
