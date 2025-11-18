@@ -92,10 +92,10 @@ export function useIrisOverview(): UseQueryResult<IrisOverviewData> {
         });
 
         return {
-          metrics: data.metrics,
-          projects: data.projects.map(transformProjectSummary),
-          events: data.events.map(transformEvent),
-          anomalies: data.anomalies,
+          metrics: data.metrics || {},
+          projects: Array.isArray(data.projects) ? data.projects.map(transformProjectSummary) : [],
+          events: Array.isArray(data.events) ? data.events.map(transformEvent) : [],
+          anomalies: Array.isArray(data.anomalies) ? data.anomalies : [],
         };
       } catch (error) {
         console.error('Error fetching overview data:', error);
