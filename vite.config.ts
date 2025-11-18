@@ -19,12 +19,16 @@ export default defineConfig(({ mode }) => ({
     'process.env': JSON.stringify({}),
     'process.env.NODE_ENV': JSON.stringify(mode),
     'global': 'globalThis',
+    '__filename': JSON.stringify(''),
+    '__dirname': JSON.stringify(''),
   },
   optimizeDeps: {
     esbuildOptions: {
       define: {
         global: 'globalThis',
         process: JSON.stringify({ env: {} }),
+        __filename: '""',
+        __dirname: '""',
       }
     }
   }
