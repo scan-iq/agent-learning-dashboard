@@ -13,6 +13,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Browser polyfills for Node.js modules
+      "path": "path-browserify",
+      "fs": path.resolve(__dirname, "./src/polyfills/fs"),
+      "crypto": path.resolve(__dirname, "./src/polyfills/crypto.ts"),
     },
   },
   define: {
