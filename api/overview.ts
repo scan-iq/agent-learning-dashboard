@@ -56,8 +56,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Calculate metrics from REAL data only
     const projects = Array.from(projectMap.values()).map(p => {
       // Calculate per-project accuracy from expert performance_metrics
-      const projectAccuracy = p.experts.reduce((acc: number, e: any) =>
-        acc + (e.performance_metrics?.accuracy || 0), 0) / p.experts.length;
+      // Support multiple accuracy field names
+      const projectAccuracy = p.experts.reduce((acc: number, e: any) => {
+        const metrics = e.performance_metrics || {};
+        // Try multiple accuracy fields (different experts use different names)
+        const accuracy = metrics.accuracy ||
+                        metrics.clinical_accuracy ||
+                        metrics.win_rate ||
+                        metrics.roi ||
+                        0;
+        return acc + accuracy;
+      }, 0) / p.experts.length;
 
       // Determine health based on accuracy
       let health: 'healthy' | 'warning' | 'critical';
@@ -83,9 +92,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const warningCount = projects.filter(p => p.overallHealth === 'warning').length;
     const criticalCount = projects.filter(p => p.overallHealth === 'critical').length;
 
-    // Calculate global average accuracy
+    // Calculate global average accuracy (support multiple metric names)
     const globalAvgAccuracy = experts?.reduce((acc, e) => {
-      return acc + (e.performance_metrics?.accuracy || 0);
+      const metrics = e.performance_metrics || {};
+      const accuracy = metrics.accuracy ||
+                      metrics.clinical_accuracy ||
+                      metrics.win_rate ||
+                      metrics.roi ||
+                      0;
+      return acc + accuracy;
     }, 0) / (totalExperts || 1);
 
     return res.status(200).json({
