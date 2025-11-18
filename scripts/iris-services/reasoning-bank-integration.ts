@@ -38,7 +38,6 @@ async function initializeReasoningBank() {
     consolidationInterval: 3600000, // 1 hour
   });
 
-  await reasoningBank.init();
   console.log('✅ HybridReasoningBank ready');
 
   return reasoningBank;

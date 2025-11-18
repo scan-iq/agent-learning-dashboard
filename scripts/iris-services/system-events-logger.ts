@@ -45,8 +45,6 @@ async function logSystemEvent(event: SystemEvent) {
     maxMemories: 1000,
   });
 
-  await reflexionMemory.init();
-
   // Add as reflexion if it's a learning opportunity
   if (event.event_type === 'drift_alert' || event.severity === 'error') {
     await reflexionMemory.add({

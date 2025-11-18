@@ -44,9 +44,7 @@ async function initializeAgentDB() {
     maxMemories: 1000,
     similarityThreshold: 0.75,
   });
-
-  await reflexionMemory.init();
-  console.log('✅ ReflexionMemory initialized');
+  console.log('✅ ReflexionMemory ready');
 
   // Initialize SkillLibrary (learned capabilities)
   console.log('\n🎯 Initializing SkillLibrary...');
@@ -54,27 +52,21 @@ async function initializeAgentDB() {
     dbPath: AGENTDB_PATH,
     maxSkills: 500,
   });
-
-  await skillLibrary.init();
-  console.log('✅ SkillLibrary initialized');
+  console.log('✅ SkillLibrary ready');
 
   // Initialize CausalMemoryGraph (decision tracking)
   console.log('\n🔗 Initializing CausalMemoryGraph...');
   const causalGraph = new CausalMemoryGraph({
     dbPath: AGENTDB_PATH,
   });
-
-  await causalGraph.init();
-  console.log('✅ CausalMemoryGraph initialized');
+  console.log('✅ CausalMemoryGraph ready');
 
   // Initialize CausalRecall (retrieve causal chains)
   console.log('\n🔍 Initializing CausalRecall...');
   const causalRecall = new CausalRecall({
     dbPath: AGENTDB_PATH,
   });
-
-  await causalRecall.init();
-  console.log('✅ CausalRecall initialized');
+  console.log('✅ CausalRecall ready');
 
   // Initialize NightlyLearner (background learning)
   console.log('\n🌙 Initializing NightlyLearner...');
@@ -82,9 +74,7 @@ async function initializeAgentDB() {
     dbPath: AGENTDB_PATH,
     learningRate: 0.01,
   });
-
-  await nightlyLearner.init();
-  console.log('✅ NightlyLearner initialized');
+  console.log('✅ NightlyLearner ready');
 
   console.log('\n🎉 AgentDB fully initialized!');
   console.log('\nControllers available:');

@@ -47,8 +47,6 @@ async function detectAnomalies(project: string) {
     dbPath: AGENTDB_PATH,
   });
 
-  await explainableRecall.init();
-
   // Get current expert performance
   const { data: experts } = await supabase
     .from('expert_signatures')

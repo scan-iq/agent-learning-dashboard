@@ -41,7 +41,6 @@ async function recordConsensusDecision(decision: ConsensusDecision) {
 
   // 1. Store in AgentDB CausalMemoryGraph (tracks consensus causality)
   const causalGraph = new CausalMemoryGraph({ dbPath: AGENTDB_PATH });
-  await causalGraph.init();
 
   const consensusNode = {
     id: `consensus-${decision.task_id}`,

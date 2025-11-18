@@ -42,7 +42,6 @@ async function logModelRun(run: ModelRun) {
 
   // 1. Store in AgentDB CausalMemoryGraph (tracks decision causality)
   const causalGraph = new CausalMemoryGraph({ dbPath: AGENTDB_PATH });
-  await causalGraph.init();
 
   const decisionNode = {
     id: `run-${Date.now()}`,
