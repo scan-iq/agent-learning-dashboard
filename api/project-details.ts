@@ -50,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { id } = req.query;
 
     if (!id || typeof id !== 'string') {
-      return res.status(400).json({ error: 'Project ID required' });
+      return res.status(400).json({ error: 'Project ID required in query param: ?id=PROJECT_ID' });
     }
 
     ensureInitialized();

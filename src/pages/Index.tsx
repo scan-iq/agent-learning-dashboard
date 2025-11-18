@@ -110,7 +110,7 @@ const Index = () => {
     toast.loading('Evaluating all projects...', { id: 'evaluate-all' });
     try {
       // Call the IRIS Prime evaluate all endpoint
-      const response = await fetch('/api/iris/evaluate-all', {
+      const response = await fetch('/api/evaluate-all', {
         method: 'POST',
       });
 
@@ -132,7 +132,7 @@ const Index = () => {
   const handleAutoRetrain = async () => {
     toast.loading('Starting auto-retrain...', { id: 'retrain' });
     try {
-      const response = await fetch('/api/iris/retrain', {
+      const response = await fetch('/api/retrain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
@@ -157,7 +157,7 @@ const Index = () => {
   const handleFindPatterns = async () => {
     toast.loading('Discovering patterns...', { id: 'patterns' });
     try {
-      const response = await fetch('/api/iris/patterns');
+      const response = await fetch('/api/patterns');
 
       if (!response.ok) throw new Error('Pattern discovery failed');
 
@@ -181,7 +181,7 @@ const Index = () => {
 
     toast.loading('Generating rotation report...', { id: 'rotation' });
     try {
-      const response = await fetch(`/api/iris/rotation?projectId=${selectedProjectId}`);
+      const response = await fetch(`/api/rotation?projectId=${selectedProjectId}`);
 
       if (!response.ok) throw new Error('Rotation report failed');
 

@@ -133,7 +133,7 @@ export function useProjectDetails(projectId: string | null): UseQueryResult<Proj
       if (!projectId) return null;
 
       try {
-        const response = await fetch(`/api/project/${projectId}`);
+        const response = await fetch(`/api/project-details?id=${projectId}`);
 
         if (!response.ok) {
           throw new Error(`API error: ${response.statusText}`);
