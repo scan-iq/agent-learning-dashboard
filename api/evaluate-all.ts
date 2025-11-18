@@ -1,35 +1,12 @@
 /**
- * API Route: Evaluate All Projects
- * Uses IRIS Prime orchestrator to evaluate all projects
+ * API Route: Evaluate All Projects (IRIS Prime Logic)
+ * Direct Supabase queries - implements IRIS evaluation manually
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import {
-  initSupabase,
-  irisPrime,
-  storeIrisReport,
-} from '@foxruv/agent-learning-core';
-
-let initialized = false;
-function ensureInitialized() {
-  if (!initialized) {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseKey) {
-      initSupabase(supabaseUrl, supabaseKey, {
-        projectId: 'iris-prime-console',
-        tenantId: 'default',
-      });
-      initialized = true;
-    } else {
-      throw new Error('Supabase credentials not configured');
-    }
-  }
-}
+import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
@@ -42,42 +19,102 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    ensureInitialized();
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-    console.log('🔍 Starting IRIS Prime evaluation for all projects...');
-
-    // Use IRIS Prime orchestrator to evaluate all projects
-    const report = await irisPrime.evaluateAllProjects();
-
-    // Store report in database
-    if (report && Array.isArray(report)) {
-      await Promise.all(
-        report.map(r => storeIrisReport(r))
-      );
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase credentials not configured');
     }
 
-    console.log('✅ Evaluation complete:', {
-      projectsEvaluated: Array.isArray(report) ? report.length : 0,
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Get all active experts grouped by project
+    const { data: experts } = await supabase
+      .from('expert_signatures')
+      .select('*')
+      .eq('active', true);
+
+    if (!experts ||experts.length === 0) {
+      return res.status(200).json({
+        success: true,
+        reports: [],
+        summary: { total: 0, excellent: 0, good: 0, fair: 0, poor: 0, critical: 0 },
+        message: 'No projects to evaluate',
+      });
+    }
+
+    // Group by project
+    const projectsMap = new Map();
+    experts.forEach(e => {
+      if (!projectsMap.has(e.project)) {
+        projectsMap.set(e.project, []);
+      }
+      projectsMap.get(e.project).push(e);
     });
 
-    // Calculate summary
-    const summary = Array.isArray(report) ? {
-      total: report.length,
-      excellent: report.filter(r => r.overallHealth === 'excellent').length,
-      good: report.filter(r => r.overallHealth === 'good').length,
-      fair: report.filter(r => r.overallHealth === 'fair').length,
-      poor: report.filter(r => r.overallHealth === 'poor').length,
-      critical: report.filter(r => r.overallHealth === 'critical').length,
-    } : { total: 0, excellent: 0, good: 0, fair: 0, poor: 0, critical: 0 };
+    // Evaluate each project
+    const evaluations = [];
+    for (const [projectId, projectExperts] of projectsMap.entries()) {
+      // Calculate health score
+      const avgAccuracy = projectExperts.reduce((acc: number, e: any) => {
+        const metrics = e.performance_metrics || {};
+        return acc + (metrics.accuracy || metrics.clinical_accuracy || metrics.win_rate || 0);
+      }, 0) / projectExperts.length;
+
+      const healthScore = avgAccuracy * 100;
+
+      // Determine overall health
+      let overallHealth: 'excellent' | 'good' | 'fair' | 'poor' | 'critical';
+      if (healthScore >= 90) overallHealth = 'excellent';
+      else if (healthScore >= 80) overallHealth = 'good';
+      else if (healthScore >= 70) overallHealth = 'fair';
+      else if (healthScore >= 60) overallHealth = 'poor';
+      else overallHealth = 'critical';
+
+      const evaluation = {
+        project: projectId,
+        overallHealth,
+        healthScore,
+        avgAccuracy,
+        activeExperts: projectExperts.length,
+        timestamp: new Date().toISOString(),
+      };
+
+      evaluations.push(evaluation);
+
+      // Store evaluation in iris_reports table
+      await supabase.from('iris_reports').insert({
+        project: projectId,
+        report_type: 'auto_evaluation',
+        overall_health: overallHealth,
+        health_score: healthScore,
+        avg_success_rate: avgAccuracy,
+        total_experts: projectExperts.length,
+        drift_alerts: [],
+        recommendations: [],
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    const summary = {
+      total: evaluations.length,
+      excellent: evaluations.filter(e => e.overallHealth === 'excellent').length,
+      good: evaluations.filter(e => e.overallHealth === 'good').length,
+      fair: evaluations.filter(e => e.overallHealth === 'fair').length,
+      poor: evaluations.filter(e => e.overallHealth === 'poor').length,
+      critical: evaluations.filter(e => e.overallHealth === 'critical').length,
+    };
+
+    console.log('✅ Evaluated', evaluations.length, 'projects');
 
     return res.status(200).json({
       success: true,
-      reports: report || [],
+      reports: evaluations,
       summary,
       message: `Evaluated ${summary.total} projects successfully`,
     });
   } catch (error) {
-    console.error('❌ Error in /api/iris/evaluate-all:', error);
+    console.error('Evaluate all error:', error);
     return res.status(500).json({
       success: false,
       error: 'Evaluation failed',
