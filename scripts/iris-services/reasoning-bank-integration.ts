@@ -4,7 +4,9 @@
  * Implements closed-loop memory system with self-improvement
  */
 
-import { runTask, initialize, HybridReasoningBank } from 'agentic-flow';
+import { reasoningbank } from 'agentic-flow';
+
+const { runTask, initialize, HybridReasoningBank } = reasoningbank;
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
