@@ -54,6 +54,7 @@ export function AnalyticsDashboard() {
   }
 
   if (error) {
+    console.error('❌ Analytics error:', error);
     return (
       <Card className="border-destructive">
         <CardHeader>
@@ -75,10 +76,34 @@ export function AnalyticsDashboard() {
   }
 
   if (!analytics) {
+    console.warn('⚠️ Analytics data is null/undefined');
     return null;
   }
 
-  const { overview, tokenUsage, costs, performance, modelRuns, reflexions, consensus, projects } = analytics;
+  // Detailed logging to debug what we received
+  console.log('📊 Analytics data structure:', {
+    hasOverview: !!analytics.overview,
+    hasTokenUsage: !!analytics.tokenUsage,
+    hasCosts: !!analytics.costs,
+    hasPerformance: !!analytics.performance,
+    hasModelRuns: !!analytics.modelRuns,
+    hasReflexions: !!analytics.reflexions,
+    hasConsensus: !!analytics.consensus,
+    hasProjects: !!analytics.projects,
+    keys: Object.keys(analytics),
+  });
+
+  // Safely destructure with fallbacks
+  const {
+    overview = {},
+    tokenUsage = {},
+    costs = {},
+    performance = {},
+    modelRuns = [],
+    reflexions = [],
+    consensus = [],
+    projects = [],
+  } = analytics || {};
 
   return (
     <div className="space-y-6">

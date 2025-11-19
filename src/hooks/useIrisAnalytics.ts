@@ -112,14 +112,118 @@ export function useIrisAnalytics(): UseQueryResult<IrisAnalytics> {
       try {
         const response = await irisApi.getAnalytics();
         // Handle wrapped response {success: true, data: {...}}
-        const data = response.data || response;
-        console.log('✅ Fetched analytics from backend:', {
-          projects: data.projects?.length,
-          modelRuns: data.modelRuns?.length,
-          reflexions: data.reflexions?.length,
-          totalCost: data.costs?.totalCost,
+        const backendData = response.data || response;
+
+        console.log('📡 Raw backend data:', {
+          hasOverview: !!backendData.overview,
+          hasTokens: !!backendData.tokens,
+          hasPerformance: !!backendData.performance,
+          hasRecent: !!backendData.recent,
+          keys: Object.keys(backendData),
         });
-        return data;
+
+        // Transform backend structure to match frontend expectations
+        const transformed: IrisAnalytics = {
+          overview: {
+            totalProjects: 1, // Single project per API key
+            totalRuns: backendData.overview?.totalModelRuns || 0,
+            totalCost: backendData.tokens?.totalCostUsd || 0,
+            avgConfidence: backendData.performance?.avgConfidence || 0,
+            successRate: backendData.performance?.successRate || 0,
+            totalReflexions: backendData.overview?.totalReflexions || 0,
+            totalConsensus: backendData.overview?.totalConsensusDecisions || 0,
+          },
+
+          tokenUsage: {
+            totalTokens: (backendData.tokens?.totalTokensIn || 0) + (backendData.tokens?.totalTokensOut || 0),
+            inputTokens: backendData.tokens?.totalTokensIn || 0,
+            outputTokens: backendData.tokens?.totalTokensOut || 0,
+            byModel: [], // Backend doesn't provide this yet
+            byProject: [{
+              project: backendData.projectName || backendData.projectId || 'Unknown',
+              tokens: (backendData.tokens?.totalTokensIn || 0) + (backendData.tokens?.totalTokensOut || 0),
+              cost: backendData.tokens?.totalCostUsd || 0,
+            }],
+            overTime: [], // Backend doesn't provide time series yet
+          },
+
+          costs: {
+            totalCost: backendData.tokens?.totalCostUsd || 0,
+            byModel: [], // Backend doesn't provide this yet
+            byProject: [{
+              project: backendData.projectName || backendData.projectId || 'Unknown',
+              cost: backendData.tokens?.totalCostUsd || 0,
+              runs: backendData.overview?.totalModelRuns || 0,
+            }],
+            overTime: [], // Backend doesn't provide time series yet
+          },
+
+          performance: {
+            avgLatency: backendData.performance?.avgLatencyMs || 0,
+            avgTokensPerRun: backendData.tokens?.avgTokensPerRun || 0,
+            avgCostPerRun: backendData.overview?.totalModelRuns > 0
+              ? (backendData.tokens?.totalCostUsd || 0) / backendData.overview.totalModelRuns
+              : 0,
+            successRate: backendData.performance?.successRate || 0,
+            errorRate: 1 - (backendData.performance?.successRate || 0),
+          },
+
+          modelRuns: (backendData.recent?.modelRuns || []).map((run: any) => ({
+            id: `run-${run.timestamp}`,
+            project: backendData.projectName || backendData.projectId || 'Unknown',
+            model: run.expertId || 'unknown',
+            timestamp: run.timestamp,
+            success: run.outcome === 'success',
+            confidence: run.confidence || 0,
+            latency: 0, // Not in backend data
+            tokens: run.tokensUsed || 0,
+            cost: run.costUsd || 0,
+          })),
+
+          reflexions: (backendData.recent?.reflexions || []).map((ref: any) => ({
+            id: `ref-${ref.timestamp}`,
+            project: backendData.projectName || backendData.projectId || 'Unknown',
+            category: ref.type || 'unknown',
+            impact: ref.impactScore || 0,
+            reusedCount: 0, // Not in recent data
+            timestamp: ref.timestamp,
+          })),
+
+          consensus: (backendData.recent?.consensusDecisions || []).map((cons: any) => ({
+            id: `cons-${cons.timestamp}`,
+            project: backendData.projectName || backendData.projectId || 'Unknown',
+            participants: cons.expertsCount || 0,
+            confidence: cons.confidence || 0,
+            agreement: 1 - (cons.disagreement || 0),
+            timestamp: cons.timestamp,
+          })),
+
+          projects: [{
+            id: backendData.projectId || 'unknown',
+            name: backendData.projectName || backendData.projectId || 'Unknown Project',
+            totalRuns: backendData.overview?.totalModelRuns || 0,
+            successRate: backendData.performance?.successRate || 0,
+            avgConfidence: backendData.performance?.avgConfidence || 0,
+            totalCost: backendData.tokens?.totalCostUsd || 0,
+            lastRun: backendData.recent?.modelRuns?.[0]?.timestamp || new Date().toISOString(),
+            health: (backendData.performance?.successRate || 0) > 0.8
+              ? 'healthy'
+              : (backendData.performance?.successRate || 0) > 0.5
+                ? 'warning'
+                : 'critical',
+          }],
+        };
+
+        console.log('✅ Transformed analytics data:', {
+          totalRuns: transformed.overview.totalRuns,
+          totalCost: transformed.costs.totalCost,
+          modelRuns: transformed.modelRuns.length,
+          reflexions: transformed.reflexions.length,
+          consensus: transformed.consensus.length,
+          projects: transformed.projects.length,
+        });
+
+        return transformed;
       } catch (error) {
         console.error('❌ Error fetching analytics:', error);
         throw error;
