@@ -104,7 +104,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       keep: recommendations.filter(r => r.action === 'keep').length,
       update: recommendations.filter(r => r.action === 'update').length,
       replace: recommendations.filter(r => r.action === 'replace').length,
-      addToEnsemble: recommendations.filter(r => r.action === 'add_to_ensemble').length,
     };
 
     console.log('✅ Generated rotation report for', projectId);

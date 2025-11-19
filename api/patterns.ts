@@ -37,8 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .gte('success_rate', parseFloat(minSuccessRate as string))
       .order('success_rate', { ascending: false })
       .limit(parseInt(limit as string))
-      .then(r => r)
-      .catch(() => ({ data: null, error: null }));
+      .then(r => r, () => ({ data: null, error: null }));
 
     const patterns = patternsResult.data;
 
@@ -50,8 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50)
-        .then(r => r)
-        .catch(() => ({ data: [], error: null }));
+        .then(r => r, () => ({ data: [], error: null }));
 
       const reflexions = reflexionsResult.data;
 

@@ -35,8 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       supabase.from('expert_signatures').select('*').eq('active', true),
       supabase.from('iris_reports').select('*').order('created_at', { ascending: false }).limit(100),
       supabase.from('reflexion_bank').select('*').order('created_at', { ascending: false}).limit(20)
-        .then(r => r)
-        .catch(() => ({ data: [], error: null })),
+        .then(r => r, () => ({ data: [], error: null })),
     ]);
 
     const experts = expertsResult.data;

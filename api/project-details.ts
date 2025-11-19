@@ -38,11 +38,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const [expertsResult, reportsResult, reflexionsResult] = await Promise.all([
       supabase.from('expert_signatures').select('*').eq('project', id).eq('active', true),
       supabase.from('iris_reports').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10)
-        .then(r => r)
-        .catch(() => ({ data: [], error: null })),
+        .then(r => r, () => ({ data: [], error: null })),
       supabase.from('reflexion_bank').select('*').eq('project', id).order('created_at', { ascending: false }).limit(10)
-        .then(r => r)
-        .catch(() => ({ data: [], error: null })),
+        .then(r => r, () => ({ data: [], error: null })),
     ]);
 
     const experts = expertsResult.data;

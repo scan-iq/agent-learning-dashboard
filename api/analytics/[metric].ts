@@ -60,8 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .from('reflexion_bank')
           .select('*')
           .eq('project', projectId)
-          .then(r => r)
-          .catch(() => ({ data: [] }));
+          .then(r => r, () => ({ data: [] }));
 
         data = {
           totalReflexions: reflexions?.length || 0,
