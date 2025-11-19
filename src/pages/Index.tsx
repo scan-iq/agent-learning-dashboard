@@ -58,7 +58,9 @@ const Index = () => {
   const handleApiKeySetup = () => {
     setApiKeyConfigured(true);
     setShowApiKeySetup(false);
-    queryClient.invalidateQueries(); // Refresh all queries with new API key
+    // Only invalidate iris-related queries, not ALL queries
+    queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
+    queryClient.invalidateQueries({ queryKey: ['iris-analytics'] });
   };
 
   // Show API key setup if not configured
