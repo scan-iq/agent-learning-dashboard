@@ -9,8 +9,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     status: 'ok',
     timestamp: new Date().toISOString(),
     env: {
-      hasSupabaseUrl: !!process.env.VITE_SUPABASE_URL,
-      hasSupabaseKey: !!process.env.VITE_SUPABASE_ANON_KEY,
+      hasSupabaseUrl: !!process.env.VITE_SUPABASE_URL?.trim(),
+      hasSupabaseKey: !!process.env.VITE_SUPABASE_ANON_KEY?.trim(),
     }
   });
 }

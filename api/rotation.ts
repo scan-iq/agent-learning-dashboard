@@ -25,8 +25,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'projectId query parameter required' });
     }
 
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim();
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY?.trim();
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase credentials not configured');

@@ -20,8 +20,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const supabaseUrl = (process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL)?.trim();
-    const supabaseKey = (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY)?.trim();
+    const supabaseUrl = (process.env.VITE_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim())?.trim();
+    const supabaseKey = (process.env.VITE_SUPABASE_ANON_KEY?.trim() || process.env.SUPABASE_ANON_KEY?.trim())?.trim();
 
     if (!supabaseUrl || !supabaseKey) {
       console.error('Missing Supabase credentials:', { hasUrl: !!supabaseUrl, hasKey: !!supabaseKey });
