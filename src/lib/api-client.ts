@@ -4,7 +4,7 @@
  */
 
 // API Configuration
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://iris-prime-api.vercel.app';
 const ENABLE_MOCK = import.meta.env.VITE_ENABLE_MOCK_DATA === 'true';
 
 /**

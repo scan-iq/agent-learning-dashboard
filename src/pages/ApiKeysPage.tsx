@@ -41,7 +41,7 @@ const ApiKeysPage = () => {
   });
 
   // Get API base from env (should be set to your iris-prime-api URL)
-  const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+  const apiBase = import.meta.env.VITE_API_BASE || 'https://iris-prime-api.vercel.app';
   const adminKey = import.meta.env.VITE_ADMIN_API_KEY;
 
   // Fetch API keys

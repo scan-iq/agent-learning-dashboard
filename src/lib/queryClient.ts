@@ -48,7 +48,7 @@ export function clearIrisCache() {
  * Can be called on app initialization or route changes
  */
 export async function prefetchIrisData() {
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+  const API_BASE = import.meta.env.VITE_API_BASE || 'https://iris-prime-api.vercel.app';
 
   // Prefetch overview (most important)
   await queryClient.prefetchQuery({
