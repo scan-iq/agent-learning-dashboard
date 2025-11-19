@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,10 +8,8 @@ import { EventsFeed } from '@/components/dashboard/EventsFeed';
 import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialog';
 import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
 import { AnalyticsDashboard } from '@/components/dashboard/AnalyticsDashboard';
-import { ApiKeySetup } from '@/components/dashboard/ApiKeySetup';
 import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
 import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvestigationDialog';
-import { hasApiKey } from '@/lib/api-client';
 import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/components/dashboard/RemediationExecutionDialog';
 import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialog';
 import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
@@ -43,30 +41,8 @@ const Index = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Check if API key is configured
-  const [showApiKeySetup, setShowApiKeySetup] = useState(!hasApiKey());
-  const [apiKeyConfigured, setApiKeyConfigured] = useState(hasApiKey());
-
-  // Re-check API key on mount
-  useEffect(() => {
-    const keyExists = hasApiKey();
-    setApiKeyConfigured(keyExists);
-    setShowApiKeySetup(!keyExists);
-  }, []);
-
-  // Handle API key setup completion
-  const handleApiKeySetup = () => {
-    setApiKeyConfigured(true);
-    setShowApiKeySetup(false);
-    // Only invalidate iris-related queries, not ALL queries
-    queryClient.invalidateQueries({ queryKey: ['iris-overview'] });
-    queryClient.invalidateQueries({ queryKey: ['iris-analytics'] });
-  };
-
-  // Show API key setup if not configured
-  if (showApiKeySetup) {
-    return <ApiKeySetup onComplete={handleApiKeySetup} />;
-  }
+  // API key is optional - just use IP-based auth for now
+  // Users can configure API key later in settings if needed
 
   // Fetch real data from Supabase
   const { data: overviewData, isLoading, error } = useIrisOverview();
