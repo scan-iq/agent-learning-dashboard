@@ -80,13 +80,7 @@ export function useIrisOverview(): UseQueryResult<IrisOverviewData> {
     queryKey: irisQueryKeys.overview,
     queryFn: async () => {
       try {
-        const response = await fetch('/api/overview');
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = await irisApi.getOverview();
 
         console.log('✅ Fetched overview data from API:', {
           metrics: data.metrics,
