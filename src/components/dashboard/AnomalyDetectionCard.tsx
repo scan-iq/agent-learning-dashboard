@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Anomaly } from '@/lib/mock-data';
+import type { Anomaly } from '@/types/anomaly';
 import { AlertTriangle, TrendingDown, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 
 interface AnomalyDetectionCardProps {

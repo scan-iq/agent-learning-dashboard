@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Anomaly } from '@/lib/mock-data';
+import type { Anomaly } from '@/types/anomaly';
 import { DiagnosticData } from '@/types/diagnostics';
 import {
   AlertTriangle,
