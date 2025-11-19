@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MetricCard } from '@/components/dashboard/MetricCard';
@@ -20,7 +21,7 @@ import { AlertSentimentPanel } from '@/components/dashboard/AlertSentimentPanel'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockDiagnosticData } from '@/lib/diagnostic-mock-data';
-import type { Anomaly } from '@foxruv/agent-learning-core';
+import type { Anomaly } from '@/types/anomaly';
 import { useAlertSentiment } from '@/hooks/useAlertSentiment';
 import { useIrisOverview, useProjectDetails } from '@/hooks/useIrisData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -30,13 +31,14 @@ import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
 import { AlertRule, NotificationChannel, AlertNotification, AlertChannel } from '@/types/alerts';
 import { AlertAnalytics } from '@/types/alert-analytics';
-import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell, BarChart3 } from 'lucide-react';
+import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell, BarChart3, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
 const Index = () => {
   // React Query client for cache invalidation
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetch real data from Supabase
   const { data: overviewData, isLoading, error } = useIrisOverview();
@@ -784,6 +786,15 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => navigate('/settings/api-keys')}
+              >
+                <Settings className="w-4 h-4" />
+                API Keys
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
