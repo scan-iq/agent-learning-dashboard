@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Index from "./pages/Index";
+import ApiKeysPage from "./pages/ApiKeysPage";
 import NotFound from "./pages/NotFound";
 import { checkIpAccess } from "@/lib/ipCheck";
 
@@ -49,6 +50,7 @@ const AppContent = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/settings/api-keys" element={<ApiKeysPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

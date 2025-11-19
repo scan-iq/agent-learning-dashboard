@@ -3,6 +3,7 @@
 ## 🎯 Executive Summary
 
 IRIS Prime has **TWO architectures** for telemetry:
+
 1. **Direct Supabase Mode** - ✅ Fully implemented
 2. **HTTP API Gateway Mode** - ⚠️ Partially implemented (API exists, clients don't use it)
 
@@ -36,17 +37,20 @@ IRIS Prime has **TWO architectures** for telemetry:
 ```
 
 **Requires:**
+
 ```bash
 VITE_SUPABASE_URL=https://jvccmgcybmphebyvvnxo.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJh...
 ```
 
 **Pros:**
+
 - ✅ Full agent-learning-core features
 - ✅ AgentDB available
 - ✅ No additional API needed
 
 **Cons:**
+
 - ❌ Every project needs Supabase credentials (5+ env vars)
 - ❌ Security risk (credentials in every codebase)
 - ❌ Harder to manage permissions
@@ -89,12 +93,14 @@ VITE_SUPABASE_ANON_KEY=eyJh...
 ```
 
 **Requires:**
+
 ```bash
 IRIS_API_URL=https://iris-prime-7pclvmil2-legonow.vercel.app
 IRIS_API_KEY=your-generated-key
 ```
 
 **Pros:**
+
 - ✅ Only 2 env vars instead of 5+
 - ✅ No Supabase credentials in projects
 - ✅ Centralized auth and rate limiting
@@ -102,12 +108,13 @@ IRIS_API_KEY=your-generated-key
 - ✅ Better security isolation
 
 **Cons:**
+
 - ❌ Requires API gateway deployment
 - ❌ Additional network hop
 
 ---
 
-## ⚠️ The Gap: iris discover Doesn't Support HTTP Mode!
+## ⚠️ The Gap: iris discover Doesn't Support HTTP Mode
 
 ### Current Code (`src/scripts/iris/iris-discover.ts`)
 
@@ -173,15 +180,19 @@ if (process.env.IRIS_API_URL && process.env.IRIS_API_KEY) {
 ## 🎯 Answer to Your Questions
 
 ### Q1: Why isn't IRIS Discover using HTTP API approach?
+
 **A:** It's not implemented. The code only checks `isSupabaseInitialized()`, never checks for `IRIS_API_URL`.
 
 ### Q2: Should iris discover send data through Vercel API?
+
 **A:** YES, that's the documented pattern! But it's missing from the implementation.
 
 ### Q3: Is HTTP-based telemetry integration missing?
+
 **A:** Partially. The **receiving side** (iris-prime-api) exists. The **sending side** (iris discover/evaluate) is missing.
 
 ### Q4: Is there a config flag to switch modes?
+
 **A:** NO - there should be environment variable detection, but it's not implemented.
 
 ---
@@ -243,6 +254,7 @@ Currently has telemetry, but not discovery endpoint.
 - iris patterns
 
 All should support the three-tier fallback:
+
 1. Try HTTP API (if IRIS_API_URL set)
 2. Try direct Supabase (if Supabase credentials)
 3. Fall back to local-only
