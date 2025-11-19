@@ -3,7 +3,7 @@
  * Prompts users to enter their IRIS Prime API key
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,13 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
   const [remember, setRemember] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,9 +73,13 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
       onComplete();
     } catch (err) {
       console.error('API key validation error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to validate API key');
+      if (isMounted.current) {
+        setError(err instanceof Error ? err.message : 'Failed to validate API key');
+      }
     } finally {
-      setIsValidating(false);
+      if (isMounted.current) {
+        setIsValidating(false);
+      }
     }
   };
 
