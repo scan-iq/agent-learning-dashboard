@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +7,11 @@ import { ProjectCard } from '@/components/dashboard/ProjectCard';
 import { EventsFeed } from '@/components/dashboard/EventsFeed';
 import { ProjectDetailsDialog } from '@/components/dashboard/ProjectDetailsDialog';
 import { AnalyticsSection } from '@/components/dashboard/AnalyticsSection';
+import { AnalyticsDashboard } from '@/components/dashboard/AnalyticsDashboard';
+import { ApiKeySetup } from '@/components/dashboard/ApiKeySetup';
 import { AnomalyDetectionCard } from '@/components/dashboard/AnomalyDetectionCard';
 import { AnomalyInvestigationDialog } from '@/components/dashboard/AnomalyInvestigationDialog';
+import { hasApiKey } from '@/lib/api-client';
 import { RemediationExecutionDialog, ExecutionState, ExecutionStep } from '@/components/dashboard/RemediationExecutionDialog';
 import { ScheduleActionDialog } from '@/components/dashboard/ScheduleActionDialog';
 import { ScheduledActionsCard } from '@/components/dashboard/ScheduledActionsCard';
@@ -39,6 +42,29 @@ const Index = () => {
   // React Query client for cache invalidation
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  // Check if API key is configured
+  const [showApiKeySetup, setShowApiKeySetup] = useState(!hasApiKey());
+  const [apiKeyConfigured, setApiKeyConfigured] = useState(hasApiKey());
+
+  // Re-check API key on mount
+  useEffect(() => {
+    const keyExists = hasApiKey();
+    setApiKeyConfigured(keyExists);
+    setShowApiKeySetup(!keyExists);
+  }, []);
+
+  // Handle API key setup completion
+  const handleApiKeySetup = () => {
+    setApiKeyConfigured(true);
+    setShowApiKeySetup(false);
+    queryClient.invalidateQueries(); // Refresh all queries with new API key
+  };
+
+  // Show API key setup if not configured
+  if (showApiKeySetup) {
+    return <ApiKeySetup onComplete={handleApiKeySetup} />;
+  }
 
   // Fetch real data from Supabase
   const { data: overviewData, isLoading, error } = useIrisOverview();
@@ -934,7 +960,23 @@ const Index = () => {
             </section>
           </div>
 
-          {/* Analytics Section */}
+          {/* Backend Analytics Dashboard - NEW! */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Backend Analytics</h2>
+                <p className="text-sm text-muted-foreground">
+                  Live data from IRIS Prime API - Token usage, costs, and performance metrics
+                </p>
+              </div>
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
+                Live Data
+              </Badge>
+            </div>
+            <AnalyticsDashboard />
+          </section>
+
+          {/* Legacy Analytics Section (Supabase Direct) */}
           <AnalyticsSection />
 
           {/* Scheduled Actions */}

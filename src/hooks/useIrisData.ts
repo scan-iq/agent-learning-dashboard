@@ -1,10 +1,14 @@
 /**
  * React Query hooks for IRIS Prime dashboard
  * Calls API routes - NO server-side code imported!
+ *
+ * NOTE: This hooks file uses internal API routes (/api/overview, /api/project-details, etc.)
+ * For backend IRIS Prime API integration, use useIrisAnalytics.ts instead
  */
 
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Project, OverviewMetrics, IrisEvent, ProjectDetails } from '@/types/iris';
+import { irisApi } from '@/lib/api-client';
 
 /**
  * Type imports only (not bundled into browser)
