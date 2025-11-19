@@ -110,7 +110,9 @@ export function useIrisAnalytics(): UseQueryResult<IrisAnalytics> {
     queryKey: ['iris-analytics'],
     queryFn: async () => {
       try {
-        const data = await irisApi.getAnalytics();
+        const response = await irisApi.getAnalytics();
+        // Handle wrapped response {success: true, data: {...}}
+        const data = response.data || response;
         console.log('✅ Fetched analytics from backend:', {
           projects: data.projects?.length,
           modelRuns: data.modelRuns?.length,
