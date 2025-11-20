@@ -90,6 +90,31 @@ export const irisApi = {
   getOverview: () => apiRequest<any>('/api/iris/overview'),
 
   /**
+   * Telemetry health summary (queue counts/last flush)
+   */
+  getTelemetryHealth: () => apiRequest<any>('/api/telemetry/health'),
+
+  /**
+   * Telemetry queue summary (same as health but raw summary payload)
+   */
+  getTelemetryQueue: () => apiRequest<any>('/api/telemetry/queue'),
+
+  /**
+   * Decisions drafts (for approval)
+   */
+  getDecisionDrafts: (status?: string) =>
+    apiRequest<any>(`/api/iris/decisions${status ? `?status=${status}` : ''}`),
+
+  /**
+   * Update decision draft status (approve/reject)
+   */
+  updateDecisionDraft: (id: string, status: 'approved' | 'rejected') =>
+    apiRequest<any>('/api/iris/decisions', {
+      method: 'POST',
+      body: JSON.stringify({ id, status }),
+    }),
+
+  /**
    * Get all projects
    */
   getProjects: () => apiRequest<any>('/api/iris/projects'),

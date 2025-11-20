@@ -25,6 +25,7 @@ import { mockDiagnosticData } from '@/lib/diagnostic-mock-data';
 import type { Anomaly } from '@/types/anomaly';
 import { useAlertSentiment } from '@/hooks/useAlertSentiment';
 import { useIrisOverview, useProjectDetails } from '@/hooks/useIrisData';
+import { useTelemetryHealth, useDecisionDrafts } from '@/hooks/useTelemetry';
 import { useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RemediationAction } from '@/types/diagnostics';
@@ -32,7 +33,7 @@ import { Schedule, ScheduledAction } from '@/types/scheduling';
 import { ExecutionHistoryRecord } from '@/types/history';
 import { AlertRule, NotificationChannel, AlertNotification, AlertChannel } from '@/types/alerts';
 import { AlertAnalytics } from '@/types/alert-analytics';
-import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell, BarChart3, Settings } from 'lucide-react';
+import { Activity, CheckCircle2, AlertTriangle, Brain, Play, RefreshCw, History, Bell, BarChart3, Settings, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { addHours, addDays, addWeeks, addMonths } from 'date-fns';
 
@@ -105,6 +106,8 @@ const Index = () => {
   // Fetch selected project details
   const { data: selectedProject } = useProjectDetails(selectedProjectId);
   const diagnosticData = investigatingAnomaly ? mockDiagnosticData[investigatingAnomaly.id] : null;
+  const { data: telemetryHealth } = useTelemetryHealth();
+  const { data: pendingDrafts } = useDecisionDrafts('pending');
 
   // Button handlers
   const handleRefresh = () => {
@@ -869,7 +872,7 @@ const Index = () => {
           {/* Overview Metrics */}
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-4">System Overview</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               <MetricCard
                 title="Total Projects"
                 value={mockOverviewMetrics.total_projects}
@@ -891,6 +894,26 @@ const Index = () => {
                 title="Active Experts"
                 value={mockOverviewMetrics.active_experts}
                 icon={Brain}
+              />
+              <MetricCard
+                title="Pending Decisions"
+                value={pendingDrafts ? pendingDrafts.length : 0}
+                icon={Bell}
+                trend={
+                  pendingDrafts && pendingDrafts.length > 0
+                    ? { value: pendingDrafts.length, direction: 'up' }
+                    : undefined
+                }
+              />
+              <MetricCard
+                title="Telemetry Queue"
+                value={telemetryHealth?.summary?.queued ?? 0}
+                icon={Database}
+                trend={
+                  telemetryHealth?.summary?.lastFlush
+                    ? { value: telemetryHealth.summary.lastFlush, direction: 'up' }
+                    : undefined
+                }
               />
             </div>
           </section>
