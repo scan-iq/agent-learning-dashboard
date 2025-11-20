@@ -1,6 +1,6 @@
 /**
  * Analytics Dashboard Component
- * Displays comprehensive analytics from backend IRIS Prime API
+ * Displays comprehensive analytics from backend IRIS API
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

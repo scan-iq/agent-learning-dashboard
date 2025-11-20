@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 // Initialize app
 const apiBase = import.meta.env.VITE_API_BASE;
 if (apiBase) {
-  console.log('✅ IRIS Prime Dashboard - API Mode');
+  console.log('✅ IRIS Dashboard - API Mode');
   console.log('🔌 API:', apiBase);
 }
 

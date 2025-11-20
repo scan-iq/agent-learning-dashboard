@@ -32,7 +32,7 @@ Commands for managing Supabase backend integration and data synchronization.
 ## Integration
 
 Works with:
-- IRIS Prime (expert data)
+- IRIS (expert data)
 - Reflexion (trajectory storage)
 - Consensus (decision tracking)
 - Telemetry (metrics storage)

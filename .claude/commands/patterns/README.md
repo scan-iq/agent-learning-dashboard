@@ -32,7 +32,7 @@ Commands for discovering, analyzing, and transferring successful patterns across
 ## Integration
 
 Works with:
-- IRIS Prime for expert training
+- IRIS for expert training
 - Reflexion monitoring for source data
 - Consensus tracking for validation
 - Supabase for persistence

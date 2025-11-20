@@ -1,6 +1,6 @@
 /**
  * API Key Setup Component
- * Prompts users to enter their IRIS Prime API key
+ * Prompts users to enter their IRIS API key
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -67,7 +67,7 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
       setApiKey(apiKey, remember);
 
       toast.success('API Key Configured', {
-        description: 'Successfully connected to IRIS Prime API',
+        description: 'Successfully connected to IRIS API',
       });
 
       onComplete();
@@ -90,16 +90,16 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
           <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
             <Key className="w-8 h-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Welcome to IRIS Prime Console</CardTitle>
+          <CardTitle className="text-2xl">Welcome to IRIS Console</CardTitle>
           <CardDescription className="text-base mt-2">
-            Enter your API key to connect to the IRIS Prime analytics backend
+            Enter your API key to connect to the IRIS analytics backend
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              You need an IRIS Prime API key to access the dashboard. If you don't have one yet, you can
+              You need an IRIS API key to access the dashboard. If you don't have one yet, you can
               create one from the{' '}
               <a
                 href="/settings/api-keys"
@@ -158,7 +158,7 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Connect to IRIS Prime
+                  Connect to IRIS
                 </>
               )}
             </Button>
@@ -169,7 +169,7 @@ export function ApiKeySetup({ onComplete }: ApiKeySetupProps) {
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
               <li>Create an API key from the admin dashboard</li>
               <li>Copy the API key (it starts with sk_live_)</li>
-              <li>Paste it above and click "Connect to IRIS Prime"</li>
+              <li>Paste it above and click "Connect to IRIS"</li>
               <li>Start exploring your AI analytics!</li>
             </ol>
           </div>

@@ -1,10 +1,10 @@
-# IRIS Prime Slash Commands
+# IRIS Slash Commands
 
-Comprehensive command suite for the IRIS Prime Centralized Intelligence Backend.
+Comprehensive command suite for the IRIS Centralized Intelligence Backend.
 
 ## Command Categories
 
-### 🧠 IRIS Prime (Core Intelligence)
+### 🧠 IRIS (Core Intelligence)
 Intelligence system commands for expert evaluation, training, and pattern management.
 
 - `/iris-evaluate` - Evaluate single project performance
@@ -142,8 +142,8 @@ View category README for detailed information:
 ## Architecture
 
 ```
-IRIS Prime Console
-├── IRIS Prime Core (Expert Intelligence)
+IRIS Console
+├── IRIS Core (Expert Intelligence)
 │   ├── Expert Models (per-project learning)
 │   ├── Pattern Discovery (cross-project knowledge)
 │   └── Auto-Retraining (drift detection)
@@ -192,7 +192,7 @@ Notifications → User Alerts
 
 ## Total Commands: 25
 
-- IRIS Prime: 7 commands
+- IRIS: 7 commands
 - Consensus: 4 commands
 - Reflexion: 4 commands
 - Patterns: 3 commands

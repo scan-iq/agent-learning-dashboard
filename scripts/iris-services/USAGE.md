@@ -1,4 +1,4 @@
-# IRIS Prime Dashboard - Data Population Guide
+# IRIS Dashboard - Data Population Guide
 
 ## 🎯 Complete Integration with agent-learning-core v0.5.0
 
@@ -119,7 +119,7 @@ LOCAL MACHINE:
   agent-learning-core v0.5.0
     + AgentDB (decision tracking)
     + agentic-flow (memory system)
-    = FULL IRIS PRIME INTELLIGENCE
+    = FULL IRIS INTELLIGENCE
 ```
 
 **STEP 2: Where Data Is Stored**
@@ -142,7 +142,7 @@ VERCEL SERVERLESS:
 **STEP 4: What User Sees**
 ```
 BROWSER:
-  Complete IRIS Prime dashboard
+  Complete IRIS dashboard
   All telemetry visible!
 ```
 
@@ -178,4 +178,4 @@ iris evaluate:all
 #    - View Details (full breakdown)
 ```
 
-Your dashboard is now a complete IRIS Prime control plane! 🎉
+Your dashboard is now a complete IRIS control plane! 🎉

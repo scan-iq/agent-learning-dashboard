@@ -1,5 +1,5 @@
 /**
- * Get Consensus Lineage - IRIS Prime API Wrapper
+ * Get Consensus Lineage - IRIS API Wrapper
  *
  * Retrieves the decision lineage for a consensus event
  */

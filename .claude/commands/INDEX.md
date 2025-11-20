@@ -1,4 +1,4 @@
-# IRIS Prime Commands - Alphabetical Index
+# IRIS Commands - Alphabetical Index
 
 Quick alphabetical reference to all 33 commands.
 
@@ -60,7 +60,7 @@ Quick alphabetical reference to all 33 commands.
 
 ## By Category
 
-- **IRIS Prime (10)**: [iris/](iris/)
+- **IRIS (10)**: [iris/](iris/)
 - **Consensus (6)**: [consensus/](consensus/)
 - **Reflexion (6)**: [reflexion/](reflexion/)
 - **Patterns (3)**: [patterns/](patterns/)

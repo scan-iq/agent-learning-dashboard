@@ -78,7 +78,7 @@ Check overall system health, performance metrics, and intelligence status across
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║ IRIS PRIME - SYSTEM HEALTH DASHBOARD                        ║
+║ IRIS - SYSTEM HEALTH DASHBOARD                        ║
 ╠══════════════════════════════════════════════════════════════╣
 ║ Status: HEALTHY ✓                                            ║
 ║ Last Check: 2025-11-17 15:30:00                             ║

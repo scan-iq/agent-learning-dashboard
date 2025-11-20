@@ -1,4 +1,4 @@
-# IRIS Prime Commands
+# IRIS Commands
 
 Commands for interacting with the IRIS (Intelligent Reflexion & Improvement System) Prime intelligence layer.
 
@@ -30,7 +30,7 @@ Commands for interacting with the IRIS (Intelligent Reflexion & Improvement Syst
 
 ## Core Concepts
 
-**IRIS Prime** is a self-improving intelligence system that:
+**IRIS** is a self-improving intelligence system that:
 - Learns from every interaction across all projects
 - Maintains expert models per project/domain
 - Detects performance drift and auto-retrains

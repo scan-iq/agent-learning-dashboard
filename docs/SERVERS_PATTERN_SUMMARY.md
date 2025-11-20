@@ -65,7 +65,7 @@ const { data, isLoading, error } = useQuery({
 
 ## API Functions
 
-All 8 core IRIS Prime functions are available:
+All 8 core IRIS functions are available:
 
 1. **evaluateProject** - Project health evaluation
 2. **detectDrift** - Model drift detection

@@ -1,5 +1,5 @@
 /**
- * Submit Telemetry - IRIS Prime API Wrapper
+ * Submit Telemetry - IRIS API Wrapper
  *
  * Submits telemetry events to the IRIS system
  */

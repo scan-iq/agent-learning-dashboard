@@ -36,7 +36,7 @@ Commands for managing multi-expert consensus decision tracking and version linea
 ## Integration
 
 Works with:
-- IRIS Prime for expert coordination
+- IRIS for expert coordination
 - Reflexion monitoring for learning
 - Supabase for persistence
 - Pattern discovery for insights

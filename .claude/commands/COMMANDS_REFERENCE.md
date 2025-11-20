@@ -1,4 +1,4 @@
-# IRIS Prime Slash Commands - Complete Reference
+# IRIS Slash Commands - Complete Reference
 
 **Total Commands: 33** (exceeding the requested 20-30)
 
@@ -6,7 +6,7 @@ All commands follow FoxRev-level quality standards with comprehensive documentat
 
 ## Command Overview by Category
 
-### 🧠 IRIS Prime Core Intelligence (10 commands)
+### 🧠 IRIS Core Intelligence (10 commands)
 
 Expert model management, evaluation, and training.
 
@@ -232,7 +232,7 @@ Every command follows this structure:
 - Guidance on when to use each command
 
 ### ✅ Complete Coverage
-- 33 commands covering all IRIS Prime functionality
+- 33 commands covering all IRIS functionality
 - 7 categories organized by domain
 - Cross-referenced for easy navigation
 - Quick reference guides for common workflows
@@ -250,7 +250,7 @@ Every command follows this structure:
 User Commands
     ↓
 ┌─────────────────────────────────────────────┐
-│ IRIS Prime Slash Commands (33 total)       │
+│ IRIS Slash Commands (33 total)       │
 ├─────────────────────────────────────────────┤
 │                                             │
 │  🧠 IRIS Core → Expert Intelligence         │
@@ -305,4 +305,4 @@ Integrated Intelligence Backend
 **Documentation Files**: 41
 **Quality Standard**: FoxRev-level
 
-Built for the IRIS Prime Centralized Intelligence Backend.
+Built for the IRIS Centralized Intelligence Backend.

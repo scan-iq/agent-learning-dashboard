@@ -1,5 +1,5 @@
 /**
- * Get Expert Signatures - IRIS Prime API Wrapper
+ * Get Expert Signatures - IRIS API Wrapper
  *
  * Retrieves cryptographic signatures and metadata for expert models
  */

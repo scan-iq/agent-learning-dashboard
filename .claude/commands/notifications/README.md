@@ -32,7 +32,7 @@ Commands for testing and configuring multi-channel notification system.
 ## Integration
 
 Works with:
-- IRIS Prime (intelligence reports)
+- IRIS (intelligence reports)
 - Reflexion (learning alerts)
 - Consensus (decision notifications)
 - Telemetry (performance alerts)

@@ -276,7 +276,7 @@ async function example10_fullPipeline() {
  * Run all examples
  */
 async function runAllExamples() {
-  console.log('🚀 IRIS Prime MCP Wrapper Examples\n');
+  console.log('🚀 IRIS MCP Wrapper Examples\n');
   console.log('=' .repeat(60));
 
   try {

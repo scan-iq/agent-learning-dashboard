@@ -1,8 +1,8 @@
-# IRIS Prime MCP Server - Implementation Complete ✅
+# IRIS MCP Server - Implementation Complete ✅
 
 ## Overview
 
-Successfully implemented IRIS Prime MCP (Model Context Protocol) server following the **FoxRev ReasoningBank pattern**. This architecture keeps heavy AI operations out of Claude's direct context while making results available as formatted text.
+Successfully implemented IRIS MCP (Model Context Protocol) server following the **FoxRev ReasoningBank pattern**. This architecture keeps heavy AI operations out of Claude's direct context while making results available as formatted text.
 
 ## Key Innovation: FoxRev ReasoningBank Pattern
 
@@ -272,7 +272,7 @@ tsx examples/mcp-usage-demo.ts all
 ## Benefits Over Direct MCP Integration
 
 ### Context Efficiency
-- **Before**: Heavy IRIS Prime operations consume Claude's context window
+- **Before**: Heavy IRIS operations consume Claude's context window
 - **After**: Results loaded as formatted text, minimal context usage
 
 ### Performance
@@ -335,14 +335,14 @@ const result = await callIrisMCP('iris_evaluate_project', { projectId: 'nfl' });
 
 ## Related Documentation
 
-- **IRIS Prime**: [IRIS_PRIME_SUPABASE_INTEGRATION.md](./IRIS_PRIME_SUPABASE_INTEGRATION.md)
+- **IRIS**: [IRIS_PRIME_SUPABASE_INTEGRATION.md](./IRIS_PRIME_SUPABASE_INTEGRATION.md)
 - **Supabase Integration**: [SUPABASE_INTEGRATION.md](./SUPABASE_INTEGRATION.md)
 - **Pattern Discovery**: [PATTERN_DISCOVERY_SUPABASE_INTEGRATION.md](./PATTERN_DISCOVERY_SUPABASE_INTEGRATION.md)
 - **Drift Detection**: [REFLEXION_MONITOR_SUPABASE_INTEGRATION.md](./REFLEXION_MONITOR_SUPABASE_INTEGRATION.md)
 
 ## Success Criteria ✅
 
-- [x] MCP server implements all 13 IRIS Prime tools
+- [x] MCP server implements all 13 IRIS tools
 - [x] Client wrapper provides simple programmatic access
 - [x] 8 complete example workflows demonstrating usage
 - [x] 4 comprehensive documentation files
@@ -375,7 +375,7 @@ ls -1 docs/MCP*.md docs/ARCHITECTURE*.md | wc -l
 
 ## Conclusion
 
-IRIS Prime MCP server is **production-ready** and follows industry best practices:
+IRIS MCP server is **production-ready** and follows industry best practices:
 
 ✅ **FoxRev ReasoningBank Pattern**: Programmatic MCP calls, results as text
 ✅ **Comprehensive Documentation**: 4 detailed guides + inline comments
@@ -399,4 +399,4 @@ IRIS Prime MCP server is **production-ready** and follows industry best practice
 **Documentation**: ⭐⭐⭐⭐⭐ **EXCELLENT**
 **Code Quality**: ⭐⭐⭐⭐⭐ **EXCELLENT**
 
-🎉 **IRIS Prime MCP Server is ready to orchestrate your AI operations!**
+🎉 **IRIS MCP Server is ready to orchestrate your AI operations!**

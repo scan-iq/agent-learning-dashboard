@@ -2,7 +2,7 @@
 
 ## ✅ Implementation Complete
 
-The IRIS Prime MCP Wrapper Generator CLI is now fully implemented and ready to use!
+The IRIS MCP Wrapper Generator CLI is now fully implemented and ready to use!
 
 ## 📂 Files Created
 
@@ -333,7 +333,7 @@ npm install
 
 ### 2. Configure MCP Servers
 ```bash
-# Add IRIS Prime
+# Add IRIS
 claude mcp add iris-prime npx iris-prime mcp start
 
 # Add Supabase (optional)

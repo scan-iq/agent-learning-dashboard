@@ -1,5 +1,5 @@
 /**
- * Programmatic MCP client for IRIS Prime
+ * Programmatic MCP client for IRIS
  *
  * Calls IRIS MCP server and returns results to feed into model context.
  * This keeps heavy operations OUT of Claude's direct MCP context.
@@ -262,7 +262,7 @@ export class IrisMCPClient extends EventEmitter {
   }
 
   // ============================================
-  // IRIS Prime Convenience Methods
+  // IRIS Convenience Methods
   // ============================================
 
   /**

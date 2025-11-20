@@ -1,7 +1,7 @@
-# IRIS Prime Console - Real API Integration
+# IRIS Console - Real API Integration
 
 ## Overview
-This document describes the integration of real Supabase API calls in the IRIS Prime Console dashboard, replacing the mock data implementation.
+This document describes the integration of real Supabase API calls in the IRIS Console dashboard, replacing the mock data implementation.
 
 ## Changes Made
 

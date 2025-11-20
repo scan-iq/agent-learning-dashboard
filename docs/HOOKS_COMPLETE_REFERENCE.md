@@ -1,8 +1,8 @@
-# IRIS Prime Console - Complete Hooks Reference
+# IRIS Console - Complete Hooks Reference
 
 ## Overview
 
-The IRIS Prime Console has **comprehensive React Query hooks** that connect to the `@foxruv/agent-learning-core` Supabase backend. All hooks are production-ready with auto-refresh, error handling, and type safety.
+The IRIS Console has **comprehensive React Query hooks** that connect to the `@foxruv/agent-learning-core` Supabase backend. All hooks are production-ready with auto-refresh, error handling, and type safety.
 
 ## 📦 Installation Status
 

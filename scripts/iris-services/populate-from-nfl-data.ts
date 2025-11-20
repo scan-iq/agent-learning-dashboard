@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Populate IRIS Prime Dashboard from Real NFL Predictor Data
+ * Populate IRIS Dashboard from Real NFL Predictor Data
  * Uses agent-learning-core v0.4.4 Supabase helpers (work in serverless!)
  * NO AgentDB dependencies - pure Supabase operations
  */
@@ -12,7 +12,7 @@ import { createClient } from '@supabase/supabase-js';
 
 async function populateFromRealData() {
   console.log('═══════════════════════════════════════════════════════');
-  console.log('  IRIS PRIME - Populate from Real NFL Data');
+  console.log('  IRIS - Populate from Real NFL Data');
   console.log('  Using: agent-learning-core v0.4.4 Supabase helpers');
   console.log('═══════════════════════════════════════════════════════\n');
 

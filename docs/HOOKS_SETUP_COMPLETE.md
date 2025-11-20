@@ -1,8 +1,8 @@
-# IRIS Prime Claude Code Hooks - Setup Complete
+# IRIS Claude Code Hooks - Setup Complete
 
 ## Installation Summary
 
-Claude Code hooks have been successfully configured for IRIS Prime Console!
+Claude Code hooks have been successfully configured for IRIS Console!
 
 ## Installed Components
 
@@ -47,20 +47,20 @@ IRIS_NOTIFICATION_ENABLED=true    # ✅ WhatsApp notifications enabled
 
 **PreToolUse:**
 - ✅ Claude Flow pre-edit (auto-assign agents, load context)
-- ✅ IRIS Prime pre-edit (track file changes)
+- ✅ IRIS pre-edit (track file changes)
 - ✅ Claude Flow pre-bash (validate safety, prepare resources)
 
 **PostToolUse:**
 - ✅ Claude Flow post-edit (format, update memory)
-- ✅ IRIS Prime post-edit (log telemetry, queue patterns/consensus)
+- ✅ IRIS post-edit (log telemetry, queue patterns/consensus)
 - ✅ Claude Flow post-bash (track metrics, store results)
 
 **SessionStart:**
-- ✅ IRIS Prime session-start (load context, check alerts)
+- ✅ IRIS session-start (load context, check alerts)
 
 **Stop (SessionEnd):**
 - ✅ Claude Flow session-end (generate summary, persist state)
-- ✅ IRIS Prime session-end (process queues, store reflexions, sync Supabase)
+- ✅ IRIS session-end (process queues, store reflexions, sync Supabase)
 
 **PreCompact:**
 - ✅ Manual and auto compact guidance
@@ -216,7 +216,7 @@ bash .claude/helpers/session-end.sh --generate-report
 
 Expected output:
 ```
-🤖 IRIS Prime - Session ending...
+🤖 IRIS - Session ending...
    Session summary:
    - File edits: 1
    - Commands executed: 0
@@ -288,7 +288,7 @@ Hooks automatically feed data to:
 
 ### Manual Integration
 
-To process queues in IRIS Prime code:
+To process queues in IRIS code:
 
 ```typescript
 import { PatternDiscovery } from './patterns/pattern-discovery';
@@ -384,8 +384,8 @@ bash .claude/helpers/session-end.sh --generate-report
 ## Summary
 
 ✅ **Hooks Installed**: All 7 helper scripts + statusline appender
-✅ **Configuration**: Updated settings.json with IRIS Prime integration
-✅ **Status Line**: Enhanced with IRIS Prime metrics
+✅ **Configuration**: Updated settings.json with IRIS integration
+✅ **Status Line**: Enhanced with IRIS metrics
 ✅ **Documentation**: Complete guides created
 ✅ **Testing**: Metrics cache working, scripts executable
 ✅ **Integration**: Automatic tracking of telemetry, patterns, consensus, reflexions

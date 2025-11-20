@@ -299,7 +299,7 @@ npm install
 
 ### Step 2: Configure MCP Servers
 ```bash
-# Add IRIS Prime
+# Add IRIS
 claude mcp add iris-prime npx iris-prime mcp start
 
 # Add Supabase (optional)

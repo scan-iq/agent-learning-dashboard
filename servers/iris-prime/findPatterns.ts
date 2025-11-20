@@ -1,5 +1,5 @@
 /**
- * Find Patterns - IRIS Prime API Wrapper
+ * Find Patterns - IRIS API Wrapper
  *
  * Discovers patterns in consensus, reflexion, and performance data
  */

@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Agentic-Flow ReasoningBank Integration for IRIS Prime
+ * Agentic-Flow ReasoningBank Integration for IRIS
  * Implements closed-loop memory system with self-improvement
  */
 

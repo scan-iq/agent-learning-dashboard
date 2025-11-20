@@ -1,5 +1,5 @@
 /**
- * IRIS Prime REST API Client
+ * IRIS REST API Client
  *
  * Base client for making authenticated requests to the IRIS API
  * Handles errors, retries, and response parsing

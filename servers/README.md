@@ -1,4 +1,4 @@
-# IRIS Prime MCP Server Wrappers
+# IRIS MCP Server Wrappers
 
 Clean TypeScript API wrappers that hide MCP complexity and provide type-safe interfaces.
 
@@ -16,7 +16,7 @@ Following the [Anthropic MCP Best Practices](https://modelcontextprotocol.io/doc
 
 ```
 servers/
-├── iris-prime/          # IRIS Prime MCP wrappers
+├── iris-prime/          # IRIS MCP wrappers
 │   ├── client.ts        # Internal MCP client
 │   ├── evaluateProject.ts
 │   ├── detectDrift.ts

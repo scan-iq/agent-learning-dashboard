@@ -32,7 +32,7 @@ Commands for logging, analyzing, and monitoring system telemetry data.
 ## Integration
 
 Works with:
-- IRIS Prime for evaluation data
+- IRIS for evaluation data
 - Reflexion for trajectory tracking
 - Supabase for persistence
 - Pattern discovery for insights

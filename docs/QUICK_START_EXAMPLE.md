@@ -1,4 +1,4 @@
-# Quick Start: Using IRIS Prime API in React Dashboard
+# Quick Start: Using IRIS API in React Dashboard
 
 ## 1. Environment Setup
 
@@ -81,7 +81,7 @@ export function Dashboard() {
 
   return (
     <div className="dashboard">
-      <h1>IRIS Prime Dashboard</h1>
+      <h1>IRIS Dashboard</h1>
 
       {metrics && (
         <div className="metrics-grid">

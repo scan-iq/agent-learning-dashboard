@@ -36,7 +36,7 @@ Commands for tracking, searching, and reusing reflexion trajectories for continu
 ## Integration
 
 Works with:
-- IRIS Prime for expert learning
+- IRIS for expert learning
 - Pattern discovery for insights
 - Supabase for persistence
 - AgentDB for vector search

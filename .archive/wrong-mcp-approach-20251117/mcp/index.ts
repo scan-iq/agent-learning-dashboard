@@ -1,5 +1,5 @@
 /**
- * IRIS Prime MCP Client - Programmatic MCP Invocation
+ * IRIS MCP Client - Programmatic MCP Invocation
  *
  * This module provides utilities to call IRIS MCP server programmatically
  * and format results for Claude's context.

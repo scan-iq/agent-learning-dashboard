@@ -1,4 +1,4 @@
-# IRIS Prime Slash Commands - Complete Implementation
+# IRIS Slash Commands - Complete Implementation
 
 **Status**: ✅ COMPLETE
 
@@ -8,7 +8,7 @@
 
 ## Summary
 
-Successfully created **33 slash commands** for IRIS Prime, exceeding the requested 20-30 commands. All commands follow FoxRev-level quality standards with comprehensive documentation.
+Successfully created **33 slash commands** for IRIS, exceeding the requested 20-30 commands. All commands follow FoxRev-level quality standards with comprehensive documentation.
 
 ## Statistics
 
@@ -83,7 +83,7 @@ Successfully created **33 slash commands** for IRIS Prime, exceeding the request
 
 ## Command Breakdown by Category
 
-### 🧠 IRIS Prime Core (10 commands)
+### 🧠 IRIS Core (10 commands)
 Expert model management, evaluation, and training.
 
 1. `/iris-evaluate` - Single project evaluation
@@ -242,7 +242,7 @@ Evaluate a single project's expert performance against current metrics and objec
 User Slash Commands
         ↓
 ┌──────────────────────────────────────────┐
-│  IRIS Prime Command Layer (33 commands) │
+│  IRIS Command Layer (33 commands) │
 ├──────────────────────────────────────────┤
 │                                          │
 │  🧠 IRIS Core                            │
@@ -255,7 +255,7 @@ User Slash Commands
 │                                          │
 └──────────────────────────────────────────┘
         ↓
-IRIS Prime Centralized Intelligence Backend
+IRIS Centralized Intelligence Backend
         ↓
 ┌──────────────────────────────────────────┐
 │  - Expert Models (AgentDB)              │

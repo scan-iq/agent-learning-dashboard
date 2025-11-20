@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * IRIS Prime MCP CLI
+ * IRIS MCP CLI
  *
  * Command-line interface for MCP wrapper generation and management.
  *
@@ -20,7 +20,7 @@ const program = new Command();
 
 program
   .name('iris')
-  .description('IRIS Prime MCP wrapper generator and tooling')
+  .description('IRIS MCP wrapper generator and tooling')
   .version('1.0.0');
 
 // Generate command
@@ -36,7 +36,7 @@ generateCmd
   .option('--force', 'Overwrite existing files')
   .option('-t, --template <template>', 'Template to use (standard|enhanced)', 'standard')
   .action(async (options) => {
-    console.log('🚀 IRIS Prime MCP Wrapper Generator\n');
+    console.log('🚀 IRIS MCP Wrapper Generator\n');
 
     const servers = detectMCPServers();
 
@@ -151,16 +151,16 @@ program
 // Status command
 program
   .command('status')
-  .description('Show IRIS Prime integration status')
+  .description('Show IRIS integration status')
   .action(() => {
-    console.log('📊 IRIS Prime Integration Status\n');
+    console.log('📊 IRIS Integration Status\n');
 
     const servers = detectMCPServers();
     const irisPrime = servers.find((s: any) => s.name === 'iris-prime');
     const supabase = servers.find((s: any) => s.name === 'supabase');
 
     console.log('MCP Servers:');
-    console.log(`  IRIS Prime: ${irisPrime ? '✅ Configured' : '❌ Not found'}`);
+    console.log(`  IRIS: ${irisPrime ? '✅ Configured' : '❌ Not found'}`);
     console.log(`  Supabase: ${supabase ? '✅ Configured' : '❌ Not found'}`);
     console.log();
 
@@ -183,7 +183,7 @@ program
     // Recommendations
     console.log('Recommendations:');
     if (!irisPrime) {
-      console.log('  ⚠️  Add IRIS Prime MCP server:');
+      console.log('  ⚠️  Add IRIS MCP server:');
       console.log('     claude mcp add iris-prime npx iris-prime mcp start');
     }
     if (!wrappersExist) {

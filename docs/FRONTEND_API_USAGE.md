@@ -1,6 +1,6 @@
 # Frontend API Usage Guide
 
-This guide shows how to use the IRIS Prime REST API wrappers in your React dashboard components.
+This guide shows how to use the IRIS REST API wrappers in your React dashboard components.
 
 ## Pattern Comparison
 

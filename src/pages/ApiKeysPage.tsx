@@ -209,8 +209,8 @@ const ApiKeysPage = () => {
                 <Activity className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">IRIS Prime - API Keys</h1>
-                <p className="text-sm text-muted-foreground">Manage API keys for IRIS Prime services</p>
+                <h1 className="text-2xl font-bold text-foreground">IRIS - API Keys</h1>
+                <p className="text-sm text-muted-foreground">Manage API keys for IRIS services</p>
               </div>
             </div>
           </div>
@@ -228,7 +228,7 @@ const ApiKeysPage = () => {
                 <div>
                   <CardTitle className="text-lg">About API Keys</CardTitle>
                   <CardDescription className="mt-2">
-                    API keys allow your projects to authenticate with IRIS Prime services. Each key is associated with a project and can be revoked at any time.
+                    API keys allow your projects to authenticate with IRIS services. Each key is associated with a project and can be revoked at any time.
                     API keys are only shown once when created - make sure to copy and store them securely.
                   </CardDescription>
                 </div>
@@ -242,7 +242,7 @@ const ApiKeysPage = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>API Keys</CardTitle>
-                  <CardDescription>Manage access tokens for your IRIS Prime projects</CardDescription>
+                  <CardDescription>Manage access tokens for your IRIS projects</CardDescription>
                 </div>
                 <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
                   <Plus className="w-4 h-4" />
@@ -351,7 +351,7 @@ const ApiKeysPage = () => {
           <DialogHeader>
             <DialogTitle>Create New API Key</DialogTitle>
             <DialogDescription>
-              Create a new API key for your IRIS Prime project. The key will only be shown once.
+              Create a new API key for your IRIS project. The key will only be shown once.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

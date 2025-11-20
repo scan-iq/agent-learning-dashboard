@@ -19,7 +19,7 @@ import {
 
 async function populateData() {
   console.log('═══════════════════════════════════════════════════════');
-  console.log('  IRIS PRIME - Data Population using v0.4.4');
+  console.log('  IRIS - Data Population using v0.4.4');
   console.log('═══════════════════════════════════════════════════════\n');
 
   try {
@@ -38,8 +38,8 @@ async function populateData() {
 
     console.log('✅ Supabase initialized\n');
 
-    // STEP 1: Run IRIS Prime evaluation on all projects
-    console.log('STEP 1: Evaluate all projects with IRIS Prime');
+    // STEP 1: Run IRIS evaluation on all projects
+    console.log('STEP 1: Evaluate all projects with IRIS');
     console.log('─────────────────────────────────────────────────────');
 
     const crossProjectReport = await irisPrime.evaluateAllProjects();

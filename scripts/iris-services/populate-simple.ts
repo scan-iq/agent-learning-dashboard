@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Simplified Data Population for IRIS Prime Dashboard
+ * Simplified Data Population for IRIS Dashboard
  * Uses AgentDB locally, syncs to Supabase - no agentic-flow server conflicts
  */
 
@@ -11,7 +11,7 @@ import { generateSampleAnomalies } from './anomaly-detector';
 
 async function populateSimple() {
   console.log('═══════════════════════════════════════════════════════');
-  console.log('  IRIS PRIME DASHBOARD - DATA POPULATION (Simplified)');
+  console.log('  IRIS DASHBOARD - DATA POPULATION (Simplified)');
   console.log('  Using: AgentDB + Supabase (no port conflicts)');
   console.log('═══════════════════════════════════════════════════════\n');
 

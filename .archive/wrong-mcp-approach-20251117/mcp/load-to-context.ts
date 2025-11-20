@@ -1,7 +1,7 @@
 /**
  * Utilities to format MCP results for Claude's context
  *
- * Converts raw IRIS Prime data into rich, formatted text that Claude can understand.
+ * Converts raw IRIS data into rich, formatted text that Claude can understand.
  * This creates the "(loaded into model context)" pattern from the screenshot.
  *
  * Each formatter returns human-readable text optimized for LLM comprehension.
@@ -14,7 +14,7 @@ import { EvaluationResult, DriftAlert } from './iris-mcp-client';
  *
  * @example
  * ```
- * IRIS Prime Project Evaluation
+ * IRIS Project Evaluation
  * ═══════════════════════════════════════
  * Project: nfl-predictor
  * Overall Health Score: 92/100 ★★★★★
@@ -39,7 +39,7 @@ export function formatEvaluationForContext(report: EvaluationResult): string {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║           IRIS Prime Project Evaluation Report                 ║
+║           IRIS Project Evaluation Report                 ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 📊 PROJECT: ${projectId}
@@ -107,7 +107,7 @@ export function formatDriftAlertForContext(alert: DriftAlert): string {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║               IRIS Prime Drift Detection Alert                 ║
+║               IRIS Drift Detection Alert                 ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 ${severityIcon}  SEVERITY: ${severityLabel}
@@ -160,7 +160,7 @@ export function formatConsensusLineageForContext(lineage: any): string {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║            IRIS Prime Consensus Lineage Report                 ║
+║            IRIS Consensus Lineage Report                 ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 🔗 CONSENSUS ID: ${consensusId}
@@ -208,7 +208,7 @@ ${i + 1}. ${decision.description || 'Decision'}
 export function formatReflexionsForContext(reflexions: any[]): string {
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║              IRIS Prime Reflexion Patterns                     ║
+║              IRIS Reflexion Patterns                     ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 📊 TOTAL PATTERNS: ${reflexions.length}
@@ -251,7 +251,7 @@ export function formatGlobalMetricsForContext(metrics: any): string {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║              IRIS Prime Global Metrics                         ║
+║              IRIS Global Metrics                         ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 📅 SNAPSHOT: ${new Date(timestamp).toLocaleString()}
@@ -296,7 +296,7 @@ export function formatPatternDiscoveryForContext(patterns: any): string {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║           IRIS Prime Pattern Discovery Results                 ║
+║           IRIS Pattern Discovery Results                 ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 📅 ANALYSIS DATE: ${new Date(timestamp).toLocaleString()}
@@ -351,7 +351,7 @@ ${i + 1}. ${pattern.name || 'Unnamed Pattern'}
 }
 
 /**
- * Generic formatter for any IRIS Prime data
+ * Generic formatter for any IRIS data
  */
 export function formatGenericDataForContext(title: string, data: any): string {
   let output = `

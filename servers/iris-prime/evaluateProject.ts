@@ -1,5 +1,5 @@
 /**
- * Evaluate Project - IRIS Prime API Wrapper
+ * Evaluate Project - IRIS API Wrapper
  *
  * Evaluates a project's health and provides recommendations
  */

@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * IRIS Prime Dashboard Data Population
+ * IRIS Dashboard Data Population
  * Master orchestrator using agentic-flow and agentdb
  *
  * Populates all tables:
@@ -19,7 +19,7 @@ import { generateSampleAnomalies } from './anomaly-detector';
 
 async function populateAllData() {
   console.log('═══════════════════════════════════════════════════════');
-  console.log('  IRIS PRIME DASHBOARD - DATA POPULATION');
+  console.log('  IRIS DASHBOARD - DATA POPULATION');
   console.log('  Using: agentic-flow + agentdb + Supabase');
   console.log('═══════════════════════════════════════════════════════\n');
 

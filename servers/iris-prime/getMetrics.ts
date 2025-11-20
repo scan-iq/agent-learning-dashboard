@@ -1,5 +1,5 @@
 /**
- * Get Metrics - IRIS Prime API Wrapper
+ * Get Metrics - IRIS API Wrapper
  *
  * Retrieves global system metrics and statistics
  */

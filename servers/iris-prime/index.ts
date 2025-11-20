@@ -1,7 +1,7 @@
 /**
- * IRIS Prime REST API Client
+ * IRIS REST API Client
  *
- * Frontend wrapper for IRIS Prime API that mirrors the MCP server pattern
+ * Frontend wrapper for IRIS API that mirrors the MCP server pattern
  * but calls REST endpoints instead of running an MCP server.
  *
  * This provides the same developer UX as MCP tools but works in browser/frontend.

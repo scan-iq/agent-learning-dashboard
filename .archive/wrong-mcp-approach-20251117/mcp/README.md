@@ -1,6 +1,6 @@
-# IRIS Prime MCP Client
+# IRIS MCP Client
 
-Programmatic MCP invocation utilities for IRIS Prime, following the pattern from Claude's screenshot where tools like `gdrive.getDocument()` and `salesforce.updateRecord()` are called programmatically.
+Programmatic MCP invocation utilities for IRIS, following the pattern from Claude's screenshot where tools like `gdrive.getDocument()` and `salesforce.updateRecord()` are called programmatically.
 
 ## Pattern Overview
 
@@ -144,7 +144,7 @@ All formatters produce rich, boxed text output optimized for LLM comprehension:
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║           IRIS Prime Project Evaluation Report                 ║
+║           IRIS Project Evaluation Report                 ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 📊 PROJECT: nfl-predictor
@@ -255,6 +255,6 @@ npx tsx scripts/mcp/call-iris-mcp.ts metrics 24h > metrics.txt
 
 ## See Also
 
-- [IRIS Prime MCP Server](../../../README.md)
+- [IRIS MCP Server](../../../README.md)
 - [Supabase Integration](../../supabase/README.md)
 - [Pattern Discovery](../../patterns/README.md)

@@ -1,8 +1,8 @@
-# IRIS Prime - Dual Mode Architecture Analysis
+# IRIS - Dual Mode Architecture Analysis
 
 ## 🎯 Executive Summary
 
-IRIS Prime has **TWO architectures** for telemetry:
+IRIS has **TWO architectures** for telemetry:
 
 1. **Direct Supabase Mode** - ✅ Fully implemented
 2. **HTTP API Gateway Mode** - ⚠️ Partially implemented (API exists, clients don't use it)

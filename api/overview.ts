@@ -1,6 +1,6 @@
 /**
  * API Route: Dashboard Overview
- * Direct Supabase queries with IRIS Prime logic (no agentdb dependencies)
+ * Direct Supabase queries with IRIS logic (no agentdb dependencies)
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';

@@ -1,5 +1,5 @@
 /**
- * React Query hooks for IRIS Prime Analytics
+ * React Query hooks for IRIS Analytics
  * Fetches data from backend /api/iris/analytics endpoint
  */
 

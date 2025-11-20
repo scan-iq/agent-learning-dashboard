@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Initialize AgentDB for IRIS Prime Dashboard
+ * Initialize AgentDB for IRIS Dashboard
  * Creates local AgentDB instance with all controllers
  * Run this locally (not in Vercel serverless)
  */
@@ -19,7 +19,7 @@ import fs from 'fs';
 const AGENTDB_PATH = process.env.AGENTDB_PATH || './data/iris-prime.agentdb';
 
 async function initializeAgentDB() {
-  console.log('🚀 Initializing AgentDB for IRIS Prime Dashboard...');
+  console.log('🚀 Initializing AgentDB for IRIS Dashboard...');
   console.log('📁 Database path:', AGENTDB_PATH);
 
   // Ensure data directory exists

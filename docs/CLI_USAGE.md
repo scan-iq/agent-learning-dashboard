@@ -1,6 +1,6 @@
-# IRIS Prime CLI Usage Guide
+# IRIS CLI Usage Guide
 
-Complete guide for using the IRIS Prime MCP wrapper generator CLI.
+Complete guide for using the IRIS MCP wrapper generator CLI.
 
 ## Installation
 
@@ -96,10 +96,10 @@ npm run mcp:status
 
 Output:
 ```
-📊 IRIS Prime Integration Status
+📊 IRIS Integration Status
 
 MCP Servers:
-  IRIS Prime: ✅ Configured
+  IRIS: ✅ Configured
   Supabase: ✅ Configured
 
 Generated Wrappers:
@@ -117,7 +117,7 @@ Recommendations:
 ```bash
 $ npm run generate:wrappers
 
-🚀 IRIS Prime MCP Wrapper Generator
+🚀 IRIS MCP Wrapper Generator
 
 Found 2 MCP servers:
   - iris-prime
@@ -145,7 +145,7 @@ Usage:
 ### Selective Generation
 
 ```bash
-# Generate only IRIS Prime wrappers
+# Generate only IRIS wrappers
 npm run iris generate wrappers -- --servers iris-prime
 
 # Generate only Supabase wrappers
@@ -281,7 +281,7 @@ scripts/mcp/
 
 **Solution:**
 ```bash
-# Add IRIS Prime MCP server
+# Add IRIS MCP server
 claude mcp add iris-prime npx iris-prime mcp start
 
 # Add Supabase MCP server
@@ -515,7 +515,7 @@ const results = await batchCallMCPTools([
 ## Related Documentation
 
 - [MCP Wrapper Generator Guide](/home/iris/code/experimental/iris-prime-console/docs/MCP_WRAPPER_GENERATOR.md)
-- [IRIS Prime Integration](/home/iris/code/experimental/iris-prime-console/docs/IRIS_PRIME_SUPABASE_INTEGRATION.md)
+- [IRIS Integration](/home/iris/code/experimental/iris-prime-console/docs/IRIS_PRIME_SUPABASE_INTEGRATION.md)
 - [Supabase Integration](/home/iris/code/experimental/iris-prime-console/docs/SUPABASE_HELPERS_REVIEW.md)
 
 ---

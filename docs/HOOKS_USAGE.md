@@ -1,4 +1,4 @@
-# IRIS Prime Console - React Query Hooks Usage Guide
+# IRIS Console - React Query Hooks Usage Guide
 
 This guide explains how to use the React Query hooks to fetch real data from the IRIS API.
 

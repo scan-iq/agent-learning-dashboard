@@ -115,7 +115,7 @@ const Index = () => {
   const handleEvaluateAll = async () => {
     toast.loading('Evaluating all projects...', { id: 'evaluate-all' });
     try {
-      // Call the IRIS Prime evaluate all endpoint
+      // Call the IRIS evaluate all endpoint
       const response = await fetch('/api/evaluate-all', {
         method: 'POST',
       });
@@ -729,7 +729,7 @@ const Index = () => {
                 <Activity className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">IRIS Prime</h1>
+                <h1 className="text-2xl font-bold text-foreground">IRIS</h1>
                 <p className="text-sm text-muted-foreground">AI Operations Control Plane</p>
               </div>
             </div>
@@ -785,7 +785,7 @@ const Index = () => {
                 <Activity className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">IRIS Prime</h1>
+                <h1 className="text-2xl font-bold text-foreground">IRIS</h1>
                 <p className="text-sm text-muted-foreground">AI Operations Control Plane</p>
               </div>
             </div>
@@ -944,7 +944,7 @@ const Index = () => {
               <div>
                 <h2 className="text-lg font-semibold text-foreground">Backend Analytics</h2>
                 <p className="text-sm text-muted-foreground">
-                  Live data from IRIS Prime API - Token usage, costs, and performance metrics
+                  Live data from IRIS API - Token usage, costs, and performance metrics
                 </p>
               </div>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary">

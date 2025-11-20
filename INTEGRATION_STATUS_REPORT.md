@@ -1,4 +1,4 @@
-# IRIS Prime Dashboard Integration - Status Report
+# IRIS Dashboard Integration - Status Report
 
 **Date:** November 19, 2025
 **Project:** iris-prime-console
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-✅ **COMPLETED** - Comprehensive dashboard integration has been implemented to connect the frontend to the backend IRIS Prime API. The data flow from Supabase → Backend API → Frontend Dashboard is now properly established with authentication, error handling, and comprehensive analytics visualization.
+✅ **COMPLETED** - Comprehensive dashboard integration has been implemented to connect the frontend to the backend IRIS API. The data flow from Supabase → Backend API → Frontend Dashboard is now properly established with authentication, error handling, and comprehensive analytics visualization.
 
 ---
 
@@ -296,7 +296,7 @@ import { ApiKeySetup } from '@/components/dashboard/ApiKeySetup';
 curl -X POST \
   -H "X-Admin-Key: lsp309Ktq8SF1eZmlO9XbR0Ch4nnOk34y/f095V/jWQ=" \
   -H "Content-Type: application/json" \
-  -d '{"projectId": "iris-prime", "projectName": "IRIS Prime", "label": "Dashboard"}' \
+  -d '{"projectId": "iris-prime", "projectName": "IRIS", "label": "Dashboard"}' \
   https://iris-prime-api.vercel.app/api/admin/api-keys
 ```
 
@@ -326,7 +326,7 @@ curl -X POST \
 curl -X POST \
   -H "X-Admin-Key: lsp309Ktq8SF1eZmlO9XbR0Ch4nnOk34y/f095V/jWQ=" \
   -H "Content-Type: application/json" \
-  -d '{"projectId": "iris-prime", "projectName": "IRIS Prime Console", "label": "Testing"}' \
+  -d '{"projectId": "iris-prime", "projectName": "IRIS Console", "label": "Testing"}' \
   https://iris-prime-api.vercel.app/api/admin/api-keys
 ```
 
@@ -354,7 +354,7 @@ curl -H "Authorization: Bearer sk_live_xxxxxxxxxxxx" \
 1. Navigate to https://agent-learning-dashboard.vercel.app
 2. Should see API Key Setup screen
 3. Enter the generated `sk_live_*` key
-4. Click "Connect to IRIS Prime"
+4. Click "Connect to IRIS"
 5. Should see dashboard with real data
 6. Check "Backend Analytics" section for charts and tables
 
@@ -528,7 +528,7 @@ VITE_ADMIN_API_KEY=lsp309Ktq8SF1eZmlO9XbR0Ch4nnOk34y/f095V/jWQ=
 
 ## Conclusion
 
-The IRIS Prime Dashboard integration is **COMPLETE** and ready for testing. All code changes have been implemented, documentation has been created, and the data flow from Supabase → Backend API → Frontend Dashboard is properly established.
+The IRIS Dashboard integration is **COMPLETE** and ready for testing. All code changes have been implemented, documentation has been created, and the data flow from Supabase → Backend API → Frontend Dashboard is properly established.
 
 **Required Action:** Generate a user API key (sk_live_*) and test the integration end-to-end.
 

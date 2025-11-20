@@ -250,7 +250,7 @@ The integration is complete and ready for testing with real Supabase data.
 3. Some data should be present in tables for meaningful display
 
 ### Testing Steps
-1. **Start backend:** Populate Supabase with IRIS Prime evaluations
+1. **Start backend:** Populate Supabase with IRIS evaluations
 2. **Start frontend:** `cd iris-prime-console && npm run dev`
 3. **Verify:** Dashboard should display real metrics and charts
 

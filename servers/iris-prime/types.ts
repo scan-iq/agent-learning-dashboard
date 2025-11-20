@@ -1,5 +1,5 @@
 /**
- * TypeScript types for IRIS Prime API
+ * TypeScript types for IRIS API
  * Shared between all wrapper functions
  */
 

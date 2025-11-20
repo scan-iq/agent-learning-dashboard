@@ -1,5 +1,5 @@
 /**
- * Detect Drift - IRIS Prime API Wrapper
+ * Detect Drift - IRIS API Wrapper
  *
  * Detects model drift in expert models
  */

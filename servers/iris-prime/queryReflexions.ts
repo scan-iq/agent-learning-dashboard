@@ -1,5 +1,5 @@
 /**
- * Query Reflexions - IRIS Prime API Wrapper
+ * Query Reflexions - IRIS API Wrapper
  *
  * Queries reflexion patterns with filtering
  */

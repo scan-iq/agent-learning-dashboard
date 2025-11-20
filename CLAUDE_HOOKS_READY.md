@@ -1,8 +1,8 @@
-# IRIS Prime Claude Code Hooks - Installation Complete ✅
+# IRIS Claude Code Hooks - Installation Complete ✅
 
 ## Summary
 
-Claude Code hooks have been successfully installed and configured for IRIS Prime Console. All telemetry, consensus, pattern discovery, and reflexion tracking now happens **automatically** without any manual intervention.
+Claude Code hooks have been successfully installed and configured for IRIS Console. All telemetry, consensus, pattern discovery, and reflexion tracking now happens **automatically** without any manual intervention.
 
 ## What Was Installed
 
@@ -113,9 +113,9 @@ All tracking data is stored locally in `.claude/`:
 └── temp/                   # Temporary file hashes
 ```
 
-## Integration with IRIS Prime
+## Integration with IRIS
 
-Hooks automatically feed these IRIS Prime subsystems:
+Hooks automatically feed these IRIS subsystems:
 
 1. **GlobalMetrics** ← Telemetry data
 2. **PatternDiscovery** ← Queued pattern updates

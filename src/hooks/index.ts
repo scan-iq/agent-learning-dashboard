@@ -1,5 +1,5 @@
 /**
- * IRIS Prime Console - React Query Hooks
+ * IRIS Console - React Query Hooks
  *
  * Centralized exports for all data fetching and mutation hooks
  */

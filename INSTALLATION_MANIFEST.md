@@ -1,10 +1,10 @@
-# IRIS Prime Claude Code Hooks - Installation Manifest
+# IRIS Claude Code Hooks - Installation Manifest
 
 ## Date: 2025-11-17
 
 ## Installation Summary
 
-Successfully configured Claude Code hooks for IRIS Prime Console following the FoxRev pattern with automatic telemetry, consensus tracking, pattern discovery, and reflexion monitoring.
+Successfully configured Claude Code hooks for IRIS Console following the FoxRev pattern with automatic telemetry, consensus tracking, pattern discovery, and reflexion monitoring.
 
 ## Files Created
 
@@ -43,18 +43,18 @@ docs/
 
 ```
 .claude/
-├── settings.json                      ✅ Updated with IRIS Prime config
+├── settings.json                      ✅ Updated with IRIS config
 ├── statusline-command.sh              ✅ Enhanced with IRIS metrics
 ├── statusline-command.sh.backup       ✅ Backup of original
 ├── iris-statusline-append.sh          ✅ IRIS metrics appender
 ├── README.md                          ✅ Complete hook documentation
 └── helpers/
-    ├── pre-edit.sh                    ✅ IRIS Prime pre-edit hook
-    ├── post-edit.sh                   ✅ IRIS Prime post-edit hook
-    ├── pre-bash.sh                    ✅ IRIS Prime pre-bash hook
-    ├── post-bash.sh                   ✅ IRIS Prime post-bash hook
-    ├── session-start.sh               ✅ IRIS Prime session start
-    ├── session-end.sh                 ✅ IRIS Prime session end
+    ├── pre-edit.sh                    ✅ IRIS pre-edit hook
+    ├── post-edit.sh                   ✅ IRIS post-edit hook
+    ├── pre-bash.sh                    ✅ IRIS pre-bash hook
+    ├── post-bash.sh                   ✅ IRIS post-bash hook
+    ├── session-start.sh               ✅ IRIS session start
+    ├── session-end.sh                 ✅ IRIS session end
     └── update-metrics.sh              ✅ Metrics updater
 ```
 
@@ -93,7 +93,7 @@ IRIS_NOTIFICATION_ENABLED=true         # WhatsApp notifications
 
 **agent-learning-core:**
 - All Claude Flow hooks (unchanged)
-- Additional IRIS Prime hooks (parallel execution)
+- Additional IRIS hooks (parallel execution)
 - Enhanced status line (Claude Flow + IRIS metrics)
 
 ## Data Storage
@@ -134,7 +134,7 @@ All tracking data stored in `.claude/`:
 
 ## Integration Points
 
-Hooks automatically integrate with IRIS Prime subsystems:
+Hooks automatically integrate with IRIS subsystems:
 
 1. **GlobalMetrics** ← `telemetry.jsonl`
 2. **PatternDiscovery** ← `pattern-queue.jsonl`
@@ -157,7 +157,7 @@ Claude Sonnet 4.5 in iris-prime-console on ⎇ main │ 🤖 IRIS ❤️ 92% ⚖
 
 ### agent-learning-core
 
-Status line already enhanced with both Claude Flow and IRIS Prime metrics.
+Status line already enhanced with both Claude Flow and IRIS metrics.
 
 Example output:
 ```
@@ -217,11 +217,11 @@ After session end:
 
 ### agent-learning-core
 
-- [x] `.claude/settings.json` updated with IRIS Prime config
+- [x] `.claude/settings.json` updated with IRIS config
 - [x] `.claude/statusline-command.sh` enhanced with IRIS metrics
 - [x] `.claude/iris-statusline-append.sh` created
 - [x] `.claude/helpers/` directory created
-- [x] All 7 IRIS Prime helper scripts created
+- [x] All 7 IRIS helper scripts created
 - [x] All scripts executable
 - [x] `.claude/README.md` created
 - [x] Documentation created (1 file)
@@ -301,7 +301,7 @@ Both projects now have production-ready Claude Code hooks that automatically:
 - Queue pattern updates and consensus checks
 - Store session reflexions
 - Update real-time metrics
-- Integrate with IRIS Prime subsystems
+- Integrate with IRIS subsystems
 
 **Zero configuration. Zero manual work. Just code!**
 
@@ -311,5 +311,5 @@ All tracking happens transparently via Claude Code hooks with minimal overhead (
 
 **Installation Date:** 2025-11-17
 **Installed By:** Claude Code Implementation Agent
-**Version:** IRIS Prime Console v1.0.0
+**Version:** IRIS Console v1.0.0
 **Pattern:** FoxRev-style automatic hooks

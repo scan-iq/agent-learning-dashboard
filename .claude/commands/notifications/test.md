@@ -31,7 +31,7 @@ Test notification channels to verify configuration and connectivity.
 ```bash
 /notifications-test \
   --channel email \
-  --message "Testing IRIS Prime notifications" \
+  --message "Testing IRIS notifications" \
   --verbose
 ```
 
@@ -78,7 +78,7 @@ Test notification channels to verify configuration and connectivity.
 │ Recipient:    +1-XXX-XXX-5678                                │
 ├──────────────────────────────────────────────────────────────┤
 │ Test Message Sent:                                           │
-│ "🤖 IRIS Prime Test: Notification system operational"       │
+│ "🤖 IRIS Test: Notification system operational"       │
 └──────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────┐

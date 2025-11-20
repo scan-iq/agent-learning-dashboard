@@ -230,7 +230,7 @@ async function handleList(client: IrisMCPClient): Promise<string> {
 
   let output = `
 ╔═══════════════════════════════════════════════════════════════╗
-║              Available IRIS Prime MCP Tools                    ║
+║              Available IRIS MCP Tools                    ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 Total Tools: ${tools.length}
@@ -259,7 +259,7 @@ Total Tools: ${tools.length}
 function printUsage() {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
-║           IRIS Prime MCP CLI - Call MCP Programmatically       ║
+║           IRIS MCP CLI - Call MCP Programmatically       ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 This script calls the IRIS MCP server programmatically and formats

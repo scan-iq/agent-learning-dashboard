@@ -1,4 +1,4 @@
-# 🎯 IRIS Prime - Complete System Overview
+# 🎯 IRIS - Complete System Overview
 
 **Generated**: 2025-11-17
 **Status**: ✅ **PRODUCTION READY**
@@ -51,7 +51,7 @@
 │  ┌──────────────────────────────────────────────────────────┐    │
 │  │  @foxruv/agent-learning-core (NPM Package)              │    │
 │  │                                                          │    │
-│  │  IRIS Prime Orchestrator (959 lines)                    │    │
+│  │  IRIS Orchestrator (959 lines)                    │    │
 │  │  ├─ evaluateProject(id)      → Health report           │    │
 │  │  ├─ evaluateAllProjects()    → Cross-project view      │    │
 │  │  ├─ autoRetrainExperts(id)   → Fix drift               │    │
@@ -305,14 +305,14 @@ Step 3: IRIS API validates and stores
 │ • Dual-writes to AgentDB + Supabase    │
 └────────────┬────────────────────────────┘
              ↓
-Step 4: IRIS Prime detects drift
+Step 4: IRIS detects drift
 ┌─────────────────────────────────────────┐
 │ GlobalMetrics analyzes:                 │
 │ • Recent avg: 0.65 (last 10 runs)       │
 │ • Baseline avg: 0.87 (last 100 runs)    │
 │ • Drop: -22% → CRITICAL DRIFT           │
 │                                         │
-│ IRIS Prime emits DRIFT_ALERT event     │
+│ IRIS emits DRIFT_ALERT event     │
 └────────────┬────────────────────────────┘
              ↓
 Step 5: WhatsApp notifier sends alert
@@ -331,7 +331,7 @@ Step 6: You receive WhatsApp message
 ┌─────────────────────────────────────────┐
 │ [WhatsApp vibrates]                     │
 │                                         │
-│ IRIS Prime:                             │
+│ IRIS:                             │
 │ 📉 DRIFT ALERT - NFL Predictor          │
 │ TheAnalyst dropped to 65%               │
 │ Retraining in 2 hours...                │
@@ -365,7 +365,7 @@ Step 2: NFL Predictor asks for patterns
 │ &minConfidence=0.8                      │
 └────────────┬────────────────────────────┘
              ↓
-Step 3: IRIS Prime finds similarity
+Step 3: IRIS finds similarity
 ┌─────────────────────────────────────────┐
 │ PatternDiscovery.findSimilarPatterns:   │
 │                                         │
@@ -552,7 +552,7 @@ This script will:
 ```bash
 # Send "menu" to your Twilio WhatsApp number
 # Expected response within 3 seconds:
-📱 IRIS Prime Commands
+📱 IRIS Commands
 • status - Overall health
 • drift - Drift alerts
 • patterns - Transfer opportunities
@@ -642,7 +642,7 @@ await fetch('https://iris-api.vercel.app/api/iris/events', {
   })
 });
 
-// That's it! IRIS Prime now:
+// That's it! IRIS now:
 // ✅ Tracks TheAnalyst performance
 // ✅ Detects drift automatically
 // ✅ Alerts you via WhatsApp
@@ -667,7 +667,7 @@ await fetch('https://iris-api.vercel.app/api/iris/events', {
   })
 });
 
-// IRIS Prime now:
+// IRIS now:
 // ✅ Tracks consensus quality
 // ✅ Learns successful patterns
 // ✅ Makes patterns available to NFL/BeClever

@@ -1,8 +1,8 @@
-# IRIS Prime Console - React Hooks Documentation
+# IRIS Console - React Hooks Documentation
 
 ## 📦 What's Included
 
-Comprehensive React Query hooks for the IRIS Prime dashboard with real-time Supabase integration.
+Comprehensive React Query hooks for the IRIS dashboard with real-time Supabase integration.
 
 ```
 Total Hook Code: 1,385 lines

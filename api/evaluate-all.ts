@@ -1,5 +1,5 @@
 /**
- * API Route: Evaluate All Projects (IRIS Prime Logic)
+ * API Route: Evaluate All Projects (IRIS Logic)
  * Direct Supabase queries - implements IRIS evaluation manually
  */
 

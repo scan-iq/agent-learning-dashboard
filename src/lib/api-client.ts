@@ -1,5 +1,5 @@
 /**
- * Centralized API Client for IRIS Prime Console
+ * Centralized API Client for IRIS Console
  * Handles all communication with the backend API
  */
 
@@ -76,7 +76,7 @@ async function apiRequest<T>(
 }
 
 /**
- * IRIS Prime API Client
+ * IRIS API Client
  */
 export const irisApi = {
   /**

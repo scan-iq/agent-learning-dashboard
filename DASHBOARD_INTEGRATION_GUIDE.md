@@ -1,8 +1,8 @@
-# IRIS Prime Console - Dashboard Integration Guide
+# IRIS Console - Dashboard Integration Guide
 
 ## Overview
 
-This guide documents the comprehensive dashboard integration with the IRIS Prime backend API, ensuring proper data flow from Supabase → Backend API → Frontend Dashboard.
+This guide documents the comprehensive dashboard integration with the IRIS backend API, ensuring proper data flow from Supabase → Backend API → Frontend Dashboard.
 
 ---
 
@@ -171,7 +171,7 @@ First-time setup component that:
 4. **Configure**:
    - Paste your API key
    - Choose "Remember my API key" to persist it
-   - Click "Connect to IRIS Prime"
+   - Click "Connect to IRIS"
 
 5. **Done!** The dashboard will now fetch real data from the backend
 

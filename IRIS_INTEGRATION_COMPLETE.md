@@ -1,8 +1,8 @@
-# IRIS Prime Dashboard - Complete Integration Guide
+# IRIS Dashboard - Complete Integration Guide
 
 ## 🎯 Architecture Overview
 
-The IRIS Prime Dashboard uses a **hybrid architecture** that preserves ALL telemetry while working in Vercel serverless:
+The IRIS Dashboard uses a **hybrid architecture** that preserves ALL telemetry while working in Vercel serverless:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -11,7 +11,7 @@ The IRIS Prime Dashboard uses a **hybrid architecture** that preserves ALL telem
 │  npm run iris:populate-data                                 │
 │         ↓                                                    │
 │  agent-learning-core v0.4.4                                 │
-│    - irisPrime singleton (IRIS Prime orchestrator)          │
+│    - irisPrime singleton (IRIS orchestrator)          │
 │    - AgentDBSingleton (decision tracking)                   │
 │    - agentic-flow ReasoningBank (memory system)             │
 │    - GlobalMetricsCollector (telemetry)                     │
@@ -145,7 +145,7 @@ This is the PROPER architecture:
 ## 🎁 What You Get
 
 ### From agent-learning-core v0.4.4
-- 🧠 **IRIS Prime Orchestrator**: Complete project health evaluation
+- 🧠 **IRIS Orchestrator**: Complete project health evaluation
 - 📊 **GlobalMetricsCollector**: Cross-project telemetry
 - 🔄 **ConsensusLineageTracker**: Expert participation over time
 - 🎯 **ReflexionMonitor**: Drift detection and staleness tracking

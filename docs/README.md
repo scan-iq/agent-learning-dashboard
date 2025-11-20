@@ -1,6 +1,6 @@
-# IRIS Prime Console Documentation
+# IRIS Console Documentation
 
-Welcome to the IRIS Prime Console documentation!
+Welcome to the IRIS Console documentation!
 
 ## 📚 Available Guides
 

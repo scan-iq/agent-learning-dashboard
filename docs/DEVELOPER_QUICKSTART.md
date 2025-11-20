@@ -1,4 +1,4 @@
-# Developer Quickstart - IRIS Prime Console
+# Developer Quickstart - IRIS Console
 
 ## 🚀 Quick Setup (5 minutes)
 
@@ -236,7 +236,7 @@ supabase
 - [React Query Docs](https://tanstack.com/query/latest)
 - [Supabase Docs](https://supabase.com/docs)
 - [Agent Learning Core](../agent-learning-core/README.md)
-- [IRIS Prime Architecture](./TECHNICAL_GUIDE.md)
+- [IRIS Architecture](./TECHNICAL_GUIDE.md)
 
 ## 💡 Pro Tips
 
