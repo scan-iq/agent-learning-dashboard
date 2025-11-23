@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 
@@ -12,7 +13,7 @@ interface MetricCardProps {
   className?: string;
 }
 
-export function MetricCard({ title, value, icon: Icon, trend, className }: MetricCardProps) {
+export const MetricCard = memo(function MetricCard({ title, value, icon: Icon, trend, className }: MetricCardProps) {
   return (
     <Card className={`p-6 bg-card border-border hover:border-primary/50 transition-all ${className}`}>
       <div className="flex items-start justify-between">
@@ -34,4 +35,4 @@ export function MetricCard({ title, value, icon: Icon, trend, className }: Metri
       </div>
     </Card>
   );
-}
+});
