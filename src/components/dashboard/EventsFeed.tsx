@@ -1,3 +1,4 @@
+import { memo, useMemo, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { IrisEvent } from '@/types/iris';
@@ -7,8 +8,9 @@ interface EventsFeedProps {
   events: IrisEvent[];
 }
 
-export function EventsFeed({ events }: EventsFeedProps) {
-  const getEventIcon = (type: IrisEvent['event_type']) => {
+export const EventsFeed = memo(function EventsFeed({ events }: EventsFeedProps) {
+  // Memoize icon mapping
+  const getEventIcon = useCallback((type: IrisEvent['event_type']) => {
     const icons = {
       evaluation: Activity,
       retrain: RefreshCw,
@@ -17,26 +19,28 @@ export function EventsFeed({ events }: EventsFeedProps) {
       reflexion: Info,
     };
     return icons[type];
-  };
+  }, []);
 
-  const getSeverityColor = (severity: IrisEvent['severity']) => {
+  // Memoize severity color mapping
+  const getSeverityColor = useCallback((severity: IrisEvent['severity']) => {
     return {
       info: 'text-primary',
       warning: 'text-warning',
       error: 'text-destructive',
     }[severity];
-  };
+  }, []);
 
-  const formatTime = (timestamp: string) => {
+  // Memoize time formatting
+  const formatTime = useCallback((timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
-    
+
     if (diff < 1) return 'Just now';
     if (diff < 60) return `${diff}m ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
     return date.toLocaleDateString();
-  };
+  }, []);
 
   return (
     <Card className="bg-card border-border">
@@ -78,4 +82,4 @@ export function EventsFeed({ events }: EventsFeedProps) {
       </ScrollArea>
     </Card>
   );
-}
+});

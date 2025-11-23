@@ -4,11 +4,15 @@
  *
  * NOTE: This hooks file uses internal API routes (/api/overview, /api/project-details, etc.)
  * For backend IRIS API integration, use useIrisAnalytics.ts instead
+ *
+ * ENHANCED: Now supports real-time updates via midstreamer WebSocket/SSE
  */
 
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, UseQueryResult, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useCallback } from 'react';
 import { Project, OverviewMetrics, IrisEvent, ProjectDetails } from '@/types/iris';
 import { irisApi } from '@/lib/api-client';
+import { useMidstreamer } from '@/hooks/useMidstreamer';
 
 /**
  * Type imports only (not bundled into browser)
@@ -211,4 +215,164 @@ export function usePatterns() {
     },
     staleTime: 30000,
   });
+}
+
+/**
+ * REAL-TIME ENHANCED HOOKS
+ * These hooks combine React Query (for initial load) with midstreamer (for live updates)
+ */
+
+/**
+ * Real-time overview hook with hybrid polling + WebSocket/SSE
+ * - Uses React Query for initial data load and caching
+ * - Switches to midstreamer for real-time incremental updates
+ * - Automatically merges real-time updates with cached data
+ * - Falls back to polling if WebSocket/SSE connection fails
+ */
+export function useRealtimeOverview(options?: {
+  enableRealtime?: boolean;
+  realtimeEndpoint?: string;
+}): UseQueryResult<IrisOverviewData> & { isLive: boolean } {
+  const { enableRealtime = true, realtimeEndpoint = '/api/stream/overview' } = options || {};
+  const queryClient = useQueryClient();
+
+  // Initial load via React Query (with 30s polling fallback)
+  const queryResult = useIrisOverview();
+
+  // Real-time updates via midstreamer
+  const {
+    data: realtimeData,
+    isConnected: isLive,
+  } = useMidstreamer<Partial<IrisOverviewData>>(realtimeEndpoint, {
+    reconnect: true,
+    reconnectInterval: 3000,
+    maxReconnectAttempts: 10,
+  });
+
+  /**
+   * Merge real-time updates into React Query cache
+   * This creates a seamless experience where initial data comes from REST API
+   * and subsequent updates stream in via WebSocket/SSE
+   */
+  const mergeRealtimeData = useCallback((
+    cachedData: IrisOverviewData | undefined,
+    liveData: Partial<IrisOverviewData> | null
+  ): IrisOverviewData | undefined => {
+    if (!liveData || !cachedData) return cachedData;
+
+    return {
+      // Merge metrics (real-time takes precedence)
+      metrics: liveData.metrics || cachedData.metrics,
+
+      // Merge projects (update existing, add new)
+      projects: liveData.projects
+        ? mergeArrays(cachedData.projects, liveData.projects, 'id')
+        : cachedData.projects,
+
+      // Prepend new events to existing events
+      events: liveData.events
+        ? [...liveData.events, ...cachedData.events].slice(0, 100)
+        : cachedData.events,
+
+      // Merge anomalies
+      anomalies: liveData.anomalies
+        ? mergeArrays(cachedData.anomalies, liveData.anomalies, 'id')
+        : cachedData.anomalies,
+    };
+  }, []);
+
+  /**
+   * Update React Query cache when real-time data arrives
+   */
+  useEffect(() => {
+    if (!enableRealtime || !realtimeData || !isLive) return;
+
+    queryClient.setQueryData<IrisOverviewData>(
+      irisQueryKeys.overview,
+      (oldData) => mergeRealtimeData(oldData, realtimeData)
+    );
+
+    console.log('✅ Real-time update applied to cache');
+  }, [realtimeData, isLive, enableRealtime, queryClient, mergeRealtimeData]);
+
+  /**
+   * Disable React Query polling when real-time connection is active
+   * This prevents redundant polling when we have live updates
+   */
+  useEffect(() => {
+    if (isLive && enableRealtime) {
+      console.log('🔴 Disabling React Query polling (real-time active)');
+      queryClient.setQueryDefaults(irisQueryKeys.overview, {
+        refetchInterval: false,
+      });
+    } else {
+      console.log('🟢 Enabling React Query polling (real-time inactive)');
+      queryClient.setQueryDefaults(irisQueryKeys.overview, {
+        refetchInterval: 30000,
+      });
+    }
+  }, [isLive, enableRealtime, queryClient]);
+
+  return {
+    ...queryResult,
+    isLive: enableRealtime && isLive,
+  };
+}
+
+/**
+ * Real-time events hook with incremental updates
+ */
+export function useRealtimeEvents(options?: {
+  enableRealtime?: boolean;
+  realtimeEndpoint?: string;
+}) {
+  const { enableRealtime = true, realtimeEndpoint = '/api/stream/events' } = options || {};
+  const queryClient = useQueryClient();
+
+  // Initial load via React Query
+  const queryResult = useEvents();
+
+  // Real-time updates via midstreamer
+  const {
+    data: realtimeEvent,
+    isConnected: isLive,
+  } = useMidstreamer<IrisEvent>(realtimeEndpoint, {
+    reconnect: true,
+    reconnectInterval: 3000,
+  });
+
+  // Prepend new events to cache
+  useEffect(() => {
+    if (!enableRealtime || !realtimeEvent || !isLive) return;
+
+    queryClient.setQueryData<IrisEvent[]>(
+      irisQueryKeys.events,
+      (oldData = []) => [realtimeEvent, ...oldData].slice(0, 100)
+    );
+  }, [realtimeEvent, isLive, enableRealtime, queryClient]);
+
+  return {
+    ...queryResult,
+    isLive: enableRealtime && isLive,
+  };
+}
+
+/**
+ * Helper: Merge arrays by unique identifier
+ * Updates existing items and adds new ones
+ */
+function mergeArrays<T extends Record<string, any>>(
+  existing: T[],
+  incoming: T[],
+  idKey: keyof T
+): T[] {
+  const merged = new Map<any, T>();
+
+  // Add existing items
+  existing.forEach((item) => merged.set(item[idKey], item));
+
+  // Update with incoming items (newer data wins)
+  incoming.forEach((item) => merged.set(item[idKey], item));
+
+  return Array.from(merged.values());
 }
